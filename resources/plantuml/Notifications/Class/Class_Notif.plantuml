@@ -1,0 +1,37 @@
+@startuml
+class Notification {
+    +int id
+    +string type
+    +string message
+    +int user_id
+    +int reservation_id
+    +string status
+    +boolean is_manual
+    +datetime read_at
+    +array data
+    +markAsRead()
+    +markAsUnread()
+}
+
+class Reservation {
+    +int id
+    +int customer_id
+    +int table_id
+    +datetime start_time
+    +datetime end_time
+    +string status
+    +float total_price
+    +createNotification()
+}
+
+class User {
+    +int id
+    +string name
+    +string email
+    +array notifications
+}
+
+Notification --> User : belongs to
+Notification --> Reservation : related to
+Reservation --> User : made by
+@enduml

@@ -1,0 +1,112 @@
+@startuml Activity Diagram - User Management (Admin & Customer Account)
+
+|Admin/SuperAdmin/Owner|
+start
+:Masuk ke menu User Management;
+:Request ke UserManagementController (index);
+
+|UserManagementController|
+:Ambil data user dari Model User;
+:Kirim data ke View (daftar user);
+
+|Admin/SuperAdmin/Owner|
+:Klik "Tambah User";
+:Input data user (nama, email, role, password, dst);
+:Submit form tambah;
+
+|UserManagementController|
+:Validasi data user;
+if (Valid?) then (ya)
+    :Simpan data user ke DB via Model User;
+    :Kirim notifikasi pembuatan akun (opsional);
+    :Redirect ke daftar user (sukses);
+else (tidak)
+    :Tampilkan error validasi;
+endif
+
+:Klik "Edit" pada user;
+:Form edit muncul dengan data lama;
+:Edit data user, submit;
+
+:Validasi data user;
+if (Valid?) then (ya)
+    :Update data user di DB via Model User;
+    :Redirect ke daftar user (sukses);
+else (tidak)
+    :Tampilkan error validasi;
+endif
+
+:Klik "Hapus" pada user;
+:Konfirmasi hapus;
+if (Konfirmasi?) then (ya)
+    :Soft delete user di DB via Model User;
+    :Redirect ke daftar user (sukses);
+else (tidak)
+    :Batal hapus;
+endif
+
+:Klik "Reset Password" pada user;
+:Konfirmasi reset;
+if (Konfirmasi?) then (ya)
+    :Reset password user (generate password baru);
+    :Kirim notifikasi password baru ke user (opsional);
+    :Redirect ke daftar user (sukses);
+else (tidak)
+    :Batal reset;
+endif
+
+partition "Customer Account Management" {
+    :Masuk ke menu Customer Management;
+    :Request ke CustomerController (index);
+    |CustomerController|
+    :Ambil data customer dari Model Customer;
+    :Kirim data ke View (daftar customer);
+
+    :Klik "Tambah Customer";
+    :Input data customer (nama, email, dst);
+    :Submit form tambah;
+
+    |CustomerController|
+    :Validasi data customer;
+    if (Valid?) then (ya)
+        :Simpan data customer ke DB via Model Customer;
+        :Redirect ke daftar customer (sukses);
+    else (tidak)
+        :Tampilkan error validasi;
+    endif
+
+    :Klik "Edit" pada customer;
+    :Form edit muncul dengan data lama;
+    :Edit data customer, submit;
+
+    :Validasi data customer;
+    if (Valid?) then (ya)
+        :Update data customer di DB via Model Customer;
+        :Redirect ke daftar customer (sukses);
+    else (tidak)
+        :Tampilkan error validasi;
+    endif
+
+    :Klik "Hapus" pada customer;
+    :Konfirmasi hapus;
+    if (Konfirmasi?) then (ya)
+        :Soft delete customer di DB via Model Customer;
+        :Redirect ke daftar customer (sukses);
+    else (tidak)
+        :Batal hapus;
+    endif
+
+    :Klik "Reset Password" pada customer;
+    :Konfirmasi reset;
+    if (Konfirmasi?) then (ya)
+        :Reset password customer (generate password baru);
+        :Kirim notifikasi password baru ke customer (opsional);
+        :Redirect ke daftar customer (sukses);
+    else (tidak)
+        :Batal reset;
+    endif
+}
+
+stop
+
+@enduml

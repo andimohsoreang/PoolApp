@@ -1,0 +1,70 @@
+@startuml Sequence Diagram - Admin Walk-In Payment (Cash & E-Payment)
+
+actor Admin
+
+'==== CASH PAYMENT ====
+Admin -> WalkinController : Pilih transaksi aktif, klik "Bayar Cash"
+WalkinController -> WalkinController : Validasi request pembayaran cash
+alt Data valid
+    WalkinController -> WalkinService : processCashPayment(request)
+    WalkinService -> Transaction : find(transaction_id)
+    Transaction -> Transaction : cek status (belum lunas & aktif)
+    alt Bisa diproses
+        WalkinService -> Payment : createOrUpdate(transaction_id, method='cash', status='paid')
+        WalkinService -> Transaction : update status 'paid'/'completed'
+        WalkinService -> Table : update status 'kosong' (jika transaksi selesai)
+        WalkinService -> Payment : set paid_at (waktu pembayaran)
+        WalkinService -> ActivityLog : create log pembayaran (opsional)
+        WalkinService --> WalkinController : status sukses
+        WalkinController -> Admin : Redirect ke halaman sukses/struk pembayaran
+    else Tidak bisa diproses
+        WalkinService --> WalkinController : error (sudah lunas/invalid)
+        WalkinController -> Admin : Tampilkan error ke admin
+    end
+else Data tidak valid
+    WalkinController -> Admin : Tampilkan error validasi ke admin
+end
+
+== ==
+
+'==== E-PAYMENT ====
+Admin -> WalkinController : Pilih transaksi aktif, klik "Bayar E-Payment"
+WalkinController -> WalkinController : Validasi request pembayaran e-payment
+alt Data valid
+    WalkinController -> WalkinService : processEPayment(request)
+    WalkinService -> Transaction : find(transaction_id)
+    Transaction -> Transaction : cek status (belum lunas & aktif)
+    alt Bisa diproses
+        WalkinService -> MidtransAPI : createPaymentRequest(data transaksi)
+        MidtransAPI -> MidtransAPI : generate payment_url/QR code
+        MidtransAPI --> WalkinService : payment_url/QR code
+        WalkinService -> Payment : createOrUpdate(transaction_id, method='e-payment', status='pending', payment_url)
+        WalkinService --> WalkinController : payment_url/QR code
+        WalkinController -> Admin : Tampilkan QR code/payment link
+        Admin -> MidtransAPI : Scan QR code / klik link pembayaran
+        MidtransAPI -> MidtransAPI : proses pembayaran (e-wallet/bank)
+        MidtransAPI -> PaymentCallbackController : Kirim notifikasi/callback (status: pending/paid/expired/failed)
+        PaymentCallbackController -> PaymentCallbackController : Validasi signature/key
+        PaymentCallbackController -> Transaction : find(transaction_id)
+        alt Status = paid
+            PaymentCallbackController -> Payment : update status 'paid', set paid_at
+            PaymentCallbackController -> Transaction : update status 'paid'/'completed'
+            PaymentCallbackController -> Table : update status 'kosong' (jika transaksi selesai)
+            PaymentCallbackController -> ActivityLog : create log pembayaran (opsional)
+            PaymentCallbackController -> Admin : Notifikasi sukses (opsional)
+        else Status = pending/expired/failed
+            PaymentCallbackController -> Payment : update status sesuai Midtrans
+            PaymentCallbackController -> Transaction : update status sesuai Midtrans
+            PaymentCallbackController -> Admin : Notifikasi gagal/expired (opsional)
+        end
+        Admin -> WalkinController : Cek status pembayaran (real-time/progress)
+        WalkinController -> Admin : Redirect ke halaman sukses/struk pembayaran (jika sukses)
+    else Tidak bisa diproses
+        WalkinService --> WalkinController : error (sudah lunas/invalid)
+        WalkinController -> Admin : Tampilkan error ke admin
+    end
+else Data tidak valid
+    WalkinController -> Admin : Tampilkan error validasi ke admin
+end
+
+@enduml

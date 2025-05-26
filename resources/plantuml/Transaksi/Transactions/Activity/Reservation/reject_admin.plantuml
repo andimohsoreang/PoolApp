@@ -1,0 +1,27 @@
+@startuml Activity Diagram - Reject Reservation by Admin
+
+|Admin|
+start
+:Masuk ke menu Reservasi;
+:Klik "Lihat Detail" pada reservasi;
+:Klik "Reject" pada reservasi;
+:Input alasan penolakan;
+
+|ReservationController|
+:Validasi status reservasi;
+if (Status valid?) then (ya)
+    :Update status reservasi menjadi 'rejected';
+    :Catat alasan penolakan;
+    :Update status transaksi menjadi 'canceled' (jika ada);
+    :Update status meja menjadi 'kosong' (jika sudah di-book);
+    :Catat waktu penolakan;
+    :Simpan log aktivitas (ActivityLog);
+    :Kirim notifikasi ke customer (NotificationService);
+    :Redirect ke daftar reservasi (sukses);
+else (tidak)
+    :Tampilkan error ke admin;
+endif
+
+stop
+
+@enduml

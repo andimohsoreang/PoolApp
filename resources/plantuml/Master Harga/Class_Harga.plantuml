@@ -1,0 +1,50 @@
+@startuml Class Diagram - Master Harga
+
+left to right direction
+
+' Styling
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor #E3F2FD
+    BorderColor #1976D2
+}
+
+' === Model Price ===
+class Price {
+    +id: int
+    +name: string
+    +amount: decimal
+    +description: string
+    +created_at: datetime
+    +updated_at: datetime
+    +deleted_at: datetime
+    --
+    +create()
+    +update()
+    +delete()
+}
+
+' === PriceService ===
+class PriceService {
+    +getAllPrices(): Price[]
+    +createPrice(data): Price
+    +getPriceById(id): Price
+    +updatePrice(id, data): Price
+    +deletePrice(id): bool
+}
+
+' === PriceController ===
+class PriceController {
+    +index()
+    +create()
+    +store(request)
+    +edit(id)
+    +update(request, id)
+    +destroy(id)
+}
+
+' === Relasi ===
+PriceController ..> PriceService : uses
+PriceService ..> Price : uses
+
+@enduml

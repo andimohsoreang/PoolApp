@@ -1,0 +1,11 @@
+@startuml Activity Diagram - Customer: Reservasi Di-Approve
+
+|Customer|
+start
+:Notifikasi diterima (reservasi di-approve);
+:Tampilkan status reservasi = 'approved';
+:Tampilkan instruksi pembayaran (jika perlu);
+:Customer dapat melakukan pembayaran (cash/e-payment);
+
+stop
+@enduml

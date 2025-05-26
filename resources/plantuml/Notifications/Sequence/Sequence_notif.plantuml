@@ -1,0 +1,15 @@
+@startuml
+actor User
+participant "ReservationController" as RC
+participant "NotificationController" as NC
+participant "NewReservationNotification" as NRN
+participant "Socket.IO Server" as SocketServer
+participant "Client" as Client
+
+User -> RC: Buat Reservasi
+RC -> NC: Buat Notifikasi
+NC -> NRN: Trigger Event
+NRN -> SocketServer: Broadcast Notifikasi
+SocketServer -> Client: Kirim Notifikasi
+Client -> Client: Perbarui UI
+@enduml

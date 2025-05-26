@@ -1,0 +1,37 @@
+@startuml Activity Diagram - Payment Cash by Admin
+
+|Admin|
+start
+:Masuk ke menu Transaksi;
+:Klik "Bayar Cash" pada transaksi;
+
+|PaymentController|
+:Validasi request pembayaran cash;
+if (Valid?) then (ya)
+    :Proses pembayaran cash via PaymentService;
+    |PaymentService|
+    :Ambil data transaksi via Model Transaction;
+    :Cek status transaksi (waiting_payment/active);
+    if (Bisa diproses?) then (ya)
+        :Buat/Update data pembayaran via Model Payment;
+        :Set payment_method = 'cash', payment_status = 'paid';
+        :Update status transaksi menjadi 'paid' dan/atau 'completed';
+        :Update status meja menjadi 'kosong';
+        :Catat waktu pembayaran (paid_at);
+        :Simpan log aktivitas pembayaran (ActivityLog);
+        :Kirim notifikasi pembayaran ke customer (NotificationService);
+        :Kembalikan status sukses ke Controller;
+        |PaymentController|
+        :Redirect ke halaman sukses/struk pembayaran;
+    else (tidak)
+        :Kembalikan error (sudah lunas/invalid);
+        |PaymentController|
+        :Tampilkan error ke admin;
+    endif
+else (tidak)
+    :Tampilkan error validasi ke admin;
+endif
+
+stop
+
+@enduml

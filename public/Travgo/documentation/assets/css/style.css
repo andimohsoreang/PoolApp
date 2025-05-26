@@ -1,0 +1,426 @@
+/*=================================
+
+Template name: Mobikit
+Version: 1.0.0
+Author: SITLBD      
+Author url: https://www.sitlbd.com/ 
+Developer: Najmul Huda Eimon 
+
+===================================*/
+
+
+/*===============================================
+ common css 
+================================================*/
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+
+:root {
+    --primary: #2196F3;
+    --secondary: #F6F8FE;
+    --primary-text: #111111;
+    --secondary-text: #78828A;
+    --sky: #3BA5FA;
+    --success: #00C566;
+    --alert: #E53935;
+    --warning: #FACC15;
+    --additional1: #6C6C6C;
+    --additional2: #E3E7EC;
+    --additional3: #F7F7F7;
+    --additional4: #E9EBED;
+    --additional5: #FF784B;
+    --gray-10: #FDFDFD;
+    --gray-20: #ECF1F6;
+    --gray-30: #E3E9ED;
+    --gray-40: #D1D8DD;
+    --gray-50: #BFC6CC;
+    --gray-60: #9CA4AB;
+    --gray-70: #78828A;
+    --gray-80: #66707A;
+    --gray-90: #434E58;
+    --gray-100: #171725;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    scrollbar-width: none;
+}
+
+.scrollbar-hidden {
+    scrollbar-width: none;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a,
+ul,
+ol {
+    margin: 0;
+    padding: 0;
+}
+
+ul li,
+ol li {
+    list-style: none;
+}
+
+img,
+svg {
+    vertical-align: middle;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover,
+a:focus {
+    text-decoration: none;
+    outline: 0;
+}
+
+.dz-clear:after {
+    clear: both;
+    display: block;
+    content: '';
+}
+
+.dz-flex-style {
+    display: flex;
+    justify-content: space-between;
+}
+
+button {
+    border: 0;
+    cursor: pointer;
+    text-align: center;
+    background: transparent;
+}
+
+button:hover,
+button:focus {
+    text-decoration: none;
+    outline: none;
+}
+
+.dz-icon-btn-design {
+    padding-left: 16px;
+}
+
+.dz-ml-8 {
+    margin-left: 8px;
+}
+
+.dz-mr-8 {
+    margin-right: 8px;
+}
+
+.dz-p0 {
+    padding: 0 !important;
+}
+
+@media (min-width:576px) {
+    .dz-container {
+        max-width: 540px
+    }
+}
+
+@media (min-width:768px) {
+    .dz-container {
+        max-width: 720px
+    }
+}
+
+@media (min-width:992px) {
+    .dz-container {
+        max-width: 960px
+    }
+}
+
+@media (min-width:1200px) {
+    .dz-container {
+        max-width: 1140px
+    }
+}
+
+
+/*=================================
+Menubar fixed
+===================================*/
+.dz-menubar.fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    z-index: 99;
+    box-shadow: 0 4px 4px 0 hsla(249, 8%, 46%, 0.05);
+}
+
+/*=================================
+Scroll top button
+===================================*/
+.top-btn {
+    height: 45px;
+    width: 45px;
+    line-height: 45px;
+    text-align: center;
+    background: var(--primary);
+    position: fixed;
+    right: 40px;
+    bottom: 40px;
+    transform: scale(0);
+    opacity: 0;
+    visibility: hidden;
+    z-index: 99;
+    outline: none;
+    -webkit-transition: all linear 0.4s;
+    -moz-transition: all linear 0.4s;
+    -ms-transition: all linear 0.4s;
+    -o-transition: all linear 0.4s;
+    transition: all linear 0.4s;
+    cursor: pointer;
+    -webkit-animation: with_bounce 1000ms ease-out infinite;
+    animation: with_bounce 1000ms ease-out infinite;
+}
+
+@keyframes with_bounce {
+
+    0%,
+    100%,
+    20%,
+    50%,
+    80% {
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+
+    40% {
+        -webkit-transform: translateY(-10px);
+        transform: translateY(-10px);
+    }
+
+    60% {
+        -webkit-transform: translateY(-5px);
+        transform: translateY(-5px);
+    }
+}
+
+
+.top-btn i {
+    font-size: 14px;
+    color: #fff;
+}
+
+.top-btn.show {
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -ms-transform: scale(1);
+    -o-transform: scale(1);
+    transform: scale(1);
+    opacity: 1;
+    visibility: visible;
+}
+
+/*=================================
+01. Menubar
+===================================*/
+.dz-menubar {
+    border-bottom: 1px solid #ccc;
+}
+
+.dz-menubar ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dz-menubar ul .dz-nav-item {
+    border-left: 1px solid #ccc;
+
+}
+
+.dz-menubar ul .dz-nav-item:last-child {
+    border-right: 1px solid #ccc;
+}
+
+.dz-menubar ul .dz-nav-item .dz-nav-link {
+    display: block;
+    padding: 0 15px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #666;
+    text-transform: capitalize;
+    line-height: 50px;
+    position: relative;
+}
+
+.dz-menubar ul .dz-nav-item .dz-nav-link.active,
+.dz-menubar ul .dz-nav-item .dz-nav-link:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+
+/*=================================
+02. Banner
+===================================*/
+.dz-banner {
+    background: url(../images/banner.jpg) no-repeat center;
+    background-size: cover;
+}
+
+.dz-banner .dz-overlay {
+    background: hsla(0, 0%, 0%, 0.5);
+    padding: 200px 0;
+    text-align: center;
+}
+
+.dz-banner h1 {
+    font-size: 40px;
+    line-height: 60px;
+    font-weight: 700;
+    color: white;
+    text-transform: capitalize;
+    padding-top: 30px;
+}
+
+.dz-banner p {
+    font-size: 18px;
+    line-height: 18px;
+    font-weight: 400;
+    color: var(--gray-30);
+    padding-bottom: 15px;
+    padding-top: 15px;
+}
+
+.dz-banner .btn-style {
+    display: inline-block;
+    text-transform: capitalize;
+    color: white;
+    font-size: 18px;
+    line-height: 40px;
+    padding: 0 20px;
+    background: var(--primary);
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+}
+
+
+/*=================================
+03. Main
+===================================*/
+.dz-main {
+    padding-top: 100px;
+}
+
+.dz-main img {
+    padding-bottom: 20px;
+}
+
+.dz-main .part h2 {
+    font-size: 24px;
+    line-height: 36px;
+    font-weight: 600;
+    color: var(--gray-70);
+    text-transform: capitalize;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #ccc;
+}
+
+.dz-main .part h3 {
+    font-size: 18px;
+    line-height: 32px;
+    font-weight: 600;
+    color: var(--gray-70);
+    text-transform: capitalize;
+}
+
+.dz-main .part p,
+.dz-main .part li {
+    font-size: 18px;
+    line-height: 28px;
+    font-weight: 400;
+    color: var(--grey60);
+}
+
+.dz-main .part p {
+    padding-bottom: 30px;
+}
+
+.dz-main .margin-left {
+    margin-left: 15px;
+}
+
+.dz-main .part {
+    padding-bottom: 50px;
+}
+
+.dz-main #general {
+    padding-bottom: 20px;
+}
+
+.dz-main ul {
+    padding-left: 35px;
+}
+
+.dz-main li.file {
+
+    list-style: none;
+    padding: 2px 0 0 30px;
+    margin: 0px;
+    line-height: 24px;
+}
+
+.dz-main li.folder {
+    background: url(../images/sprite.png) -65px -59px no-repeat;
+}
+
+.dz-main li.page {
+    background: url(../images/sprite.png) -65px -111px no-repeat;
+}
+
+.dz-main .part .inner-part {
+    padding-bottom: 30px;
+}
+
+.dz-main .part .link li {
+    list-style: circle;
+}
+
+.dz-main .part .link li a {
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: capitalize;
+    text-decoration: underline;
+}
+
+.dz-main .part .link li a:hover {
+    color: var(--gray-70);
+}
+
+.dz-main .footer p {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--grey60);
+    padding-bottom: 15px;
+}

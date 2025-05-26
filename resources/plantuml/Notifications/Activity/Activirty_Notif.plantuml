@@ -1,0 +1,11 @@
+@startuml
+start
+:User membuat reservasi;
+:Reservasi disimpan di database;
+:Notifikasi dibuat;
+:Event NewReservationNotification dipicu;
+:Notifikasi disiarkan melalui Socket.IO;
+:Klien menerima notifikasi;
+:Klien memperbarui UI dengan notifikasi;
+stop
+@enduml

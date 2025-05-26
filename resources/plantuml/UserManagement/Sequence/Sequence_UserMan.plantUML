@@ -1,0 +1,111 @@
+@startuml Sequence Diagram - User Management (Admin & Customer Account)
+
+actor Admin as Admin
+participant "UserManagementController" as UserCtrl
+participant "User" as UserModel
+participant "CustomerController" as CustCtrl
+participant "Customer" as CustModel
+participant "Notification" as NotifModel
+
+== User Account Management ==
+
+Admin -> UserCtrl : GET /admin/users
+UserCtrl -> UserModel : all()
+UserModel --> UserCtrl : List user
+UserCtrl -> Admin : Tampilkan daftar user
+
+Admin -> UserCtrl : GET /admin/users/create
+UserCtrl -> Admin : Tampilkan form tambah user
+
+Admin -> UserCtrl : POST /admin/users (data user)
+UserCtrl -> UserCtrl : Validasi data user
+alt Data valid
+    UserCtrl -> UserModel : create(data)
+    UserModel --> UserCtrl : User baru
+    UserCtrl -> NotifModel : (opsional) Kirim notifikasi pembuatan akun
+    UserCtrl -> Admin : Redirect ke daftar user (sukses)
+else Data tidak valid
+    UserCtrl -> Admin : Tampilkan error validasi
+end
+
+Admin -> UserCtrl : GET /admin/users/{id}/edit
+UserCtrl -> UserModel : find(id)
+UserModel --> UserCtrl : Data user
+UserCtrl -> Admin : Tampilkan form edit user
+
+Admin -> UserCtrl : PUT /admin/users/{id} (data baru)
+UserCtrl -> UserCtrl : Validasi data user
+alt Data valid
+    UserCtrl -> UserModel : update(id, data baru)
+    UserModel --> UserCtrl : User terupdate
+    UserCtrl -> Admin : Redirect ke daftar user (sukses)
+else Data tidak valid
+    UserCtrl -> Admin : Tampilkan error validasi
+end
+
+Admin -> UserCtrl : DELETE /admin/users/{id}
+UserCtrl -> UserModel : find(id)
+UserModel --> UserCtrl : Data user
+UserCtrl -> UserModel : delete() (soft delete)
+UserModel --> UserCtrl : Status sukses
+UserCtrl -> Admin : Redirect ke daftar user (sukses)
+
+Admin -> UserCtrl : POST /admin/users/{id}/reset-password
+UserCtrl -> UserModel : find(id)
+UserModel --> UserCtrl : Data user
+UserCtrl -> UserModel : resetPassword()
+UserModel --> UserCtrl : Password baru
+UserCtrl -> NotifModel : (opsional) Kirim notifikasi password baru
+UserCtrl -> Admin : Redirect ke daftar user (sukses)
+
+== Customer Account Management ==
+
+Admin -> CustCtrl : GET /admin/customers
+CustCtrl -> CustModel : all()
+CustModel --> CustCtrl : List customer
+CustCtrl -> Admin : Tampilkan daftar customer
+
+Admin -> CustCtrl : GET /admin/customers/create
+CustCtrl -> Admin : Tampilkan form tambah customer
+
+Admin -> CustCtrl : POST /admin/customers (data customer)
+CustCtrl -> CustCtrl : Validasi data customer
+alt Data valid
+    CustCtrl -> CustModel : create(data)
+    CustModel --> CustCtrl : Customer baru
+    CustCtrl -> Admin : Redirect ke daftar customer (sukses)
+else Data tidak valid
+    CustCtrl -> Admin : Tampilkan error validasi
+end
+
+Admin -> CustCtrl : GET /admin/customers/{id}/edit
+CustCtrl -> CustModel : find(id)
+CustModel --> CustCtrl : Data customer
+CustCtrl -> Admin : Tampilkan form edit customer
+
+Admin -> CustCtrl : PUT /admin/customers/{id} (data baru)
+CustCtrl -> CustCtrl : Validasi data customer
+alt Data valid
+    CustCtrl -> CustModel : update(id, data baru)
+    CustModel --> CustCtrl : Customer terupdate
+    CustCtrl -> Admin : Redirect ke daftar customer (sukses)
+else Data tidak valid
+    CustCtrl -> Admin : Tampilkan error validasi
+end
+
+Admin -> CustCtrl : DELETE /admin/customers/{id}
+CustCtrl -> CustModel : find(id)
+CustModel --> CustCtrl : Data customer
+CustCtrl -> CustModel : delete() (soft delete)
+CustModel --> CustCtrl : Status sukses
+CustCtrl -> Admin : Redirect ke daftar customer (sukses)
+
+Admin -> CustCtrl : POST /admin/customers/{id}/reset-password
+CustCtrl -> CustModel : find(id)
+CustModel --> CustCtrl : Data customer
+CustCtrl -> CustModel : resetPassword()
+CustModel --> CustCtrl : Password baru
+CustCtrl -> NotifModel : (opsional) Kirim notifikasi password baru
+CustCtrl -> Admin : Redirect ke daftar customer (sukses)
+
+@enduml

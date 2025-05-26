@@ -1,0 +1,101 @@
+@startuml Class Diagram - User Management (Admin & Customer Account)
+
+left to right direction
+
+' Styling
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor #E3F2FD
+    BorderColor #1976D2
+}
+
+' === UserManagementController ===
+class UserManagementController {
+    +index()
+    +create()
+    +store(request)
+    +edit(id)
+    +update(request, id)
+    +destroy(id)
+    +resetPassword(id)
+}
+
+' === User ===
+class User {
+    +id: int
+    +name: string
+    +email: string
+    +role: string
+    +position: string
+    +password: string
+    +status: string
+    +created_at: datetime
+    +updated_at: datetime
+    +deleted_at: datetime
+    --
+    +create(data)
+    +update(data)
+    +delete()
+    +resetPassword()
+}
+
+' === CustomerController ===
+class CustomerController {
+    +index()
+    +create()
+    +store(request)
+    +edit(id)
+    +update(request, id)
+    +destroy(id)
+    +resetPassword(id)
+}
+
+' === Customer ===
+class Customer {
+    +id: int
+    +name: string
+    +email: string
+    +phone: string
+    +status: string
+    +created_at: datetime
+    +updated_at: datetime
+    +deleted_at: datetime
+    --
+    +create(data)
+    +update(data)
+    +delete()
+    +resetPassword()
+}
+
+' === Notification ===
+class Notification {
+    +id: int
+    +user_id: int
+    +type: string
+    +message: string
+    +status: string
+    +created_at: datetime
+    +updated_at: datetime
+    --
+    +send(to, message)
+}
+
+' === ActivityLog ===
+class ActivityLog {
+    +id: int
+    +user_id: int
+    +activity: string
+    +created_at: datetime
+    --
+    +create(data)
+}
+
+' === Relasi ===
+UserManagementController ..> User : uses
+UserManagementController ..> Notification : uses
+UserManagementController ..> ActivityLog : uses
+CustomerController ..> Customer : uses
+CustomerController ..> Notification : uses
+CustomerController ..> ActivityLog : uses
+
+@enduml

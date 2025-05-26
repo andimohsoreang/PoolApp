@@ -1,0 +1,199 @@
+@startuml Pool Open System ERD
+
+' Styling
+skinparam linetype ortho
+skinparam class {
+    BackgroundColor White
+    ArrowColor Black
+    BorderColor Black
+}
+
+' Entities
+entity "users" {
+    * id : bigint <<PK>>
+    --
+    position : varchar(255) <<nullable>>
+    deleted_at : timestamp <<nullable>>
+    ... other user fields ...
+}
+
+entity "customers" {
+    * id : bigint <<PK>>
+    --
+    * user_id : bigint <<FK>>
+    name : varchar(255)
+    email : varchar(255) <<unique>>
+    phone : varchar(255) <<nullable>>
+    whatsapp : varchar(255) <<nullable>>
+    gender : enum['male','female','other']
+    age : integer
+    origin_address : text
+    current_address : text
+    category : enum['member','non_member','regular','vip','vvip']
+    visit_count : integer
+    status : boolean
+    deleted_at : timestamp <<nullable>>
+}
+
+entity "rooms" {
+    * id : bigint <<PK>>
+    --
+    name : varchar(255)
+    type : enum['regular','vip','vvip']
+    description : text
+    status : boolean
+}
+
+entity "tables" {
+    * id : bigint <<PK>>
+    --
+    * room_id : bigint <<FK>>
+    table_number : varchar(255)
+    status : enum['normal','rusak','maintenance']
+    capacity : integer
+    description : text
+}
+
+entity "prices" {
+    * id : bigint <<PK>>
+    --
+    * table_id : bigint <<FK>>
+    start_time : time
+    end_time : time
+    price : decimal(10,2)
+    day_type : enum['weekday','weekend']
+    valid_from : date
+    valid_until : date
+    status : boolean
+}
+
+entity "transactions" {
+    * id : bigint <<PK>>
+    --
+    * customer_id : bigint <<FK>>
+    * table_id : bigint <<FK>>
+    user_id : bigint <<FK>> <<nullable>>
+    reservation_id : bigint <<FK>> <<nullable>>
+    transaction_type : enum['walk_in','reservation']
+    start_time : datetime
+    end_time : datetime
+    status : enum['pending','confirmed','paid','completed','cancelled']
+    total_price : decimal(10,2)
+    payment_method : enum['cash','e_payment']
+    payment_status : varchar(255)
+    transaction_code : varchar(255) <<unique>>
+    payment_details : json
+    notes : text
+}
+
+entity "transaction_details" {
+    * id : bigint <<PK>>
+    --
+    * transaction_id : bigint <<FK>>
+    duration_hours : integer
+    price_per_hour : decimal(10,2)
+    promo_id : bigint <<FK>> <<nullable>>
+    subtotal : decimal(10,2)
+}
+
+entity "payments" {
+    * id : bigint <<PK>>
+    --
+    * transaction_id : bigint <<FK>>
+    payment_method : enum['cash','e_payment']
+    total_amount : decimal(10,2)
+    amount_paid : decimal(10,2)
+    change_amount : decimal(10,2)
+    status : enum['pending','paid','failed','refunded']
+    midtrans_reference : varchar(255)
+    midtrans_payment_type : varchar(255)
+    payment_date : datetime
+}
+
+entity "reservations" {
+    * id : bigint <<PK>>
+    --
+    * customer_id : bigint <<FK>>
+    * table_id : bigint <<FK>>
+    start_time : datetime
+    end_time : datetime
+    status : enum['pending','approved','paid','completed','cancelled','rejected','expired']
+    notified : boolean
+    total_price : decimal(10,2)
+    duration_hours : integer
+    price_per_hour : decimal(10,2)
+    payment_token : varchar(255)
+    payment_expired_at : datetime
+    reason : text
+    payment_order_id : varchar(255)
+    payment_details : json
+}
+
+entity "food_beverages" {
+    * id : bigint <<PK>>
+    --
+    name : varchar(255)
+    description : text
+    price : decimal(10,2)
+    category : enum['food','beverage','snack','other']
+    thumbnail : varchar(255)
+    is_available : boolean
+    is_featured : boolean
+    order : integer
+    average_rating : decimal(3,2)
+    rating_count : integer
+    deleted_at : timestamp
+}
+
+entity "food_beverage_images" {
+    * id : bigint <<PK>>
+    --
+    * food_beverage_id : bigint <<FK>>
+    image_path : varchar(255)
+    alt_text : varchar(255)
+    order : integer
+    is_primary : boolean
+}
+
+entity "food_beverage_ratings" {
+    * id : bigint <<PK>>
+    --
+    * food_beverage_id : bigint <<FK>>
+    * user_id : bigint <<FK>>
+    rating : integer
+    review : text
+    is_approved : boolean
+}
+
+entity "activity_logs" {
+    * id : bigint <<PK>>
+    --
+    user_id : bigint <<FK>> <<nullable>>
+    activity_type : varchar(255)
+    description : text
+    properties : text
+    ip_address : varchar(255)
+    user_agent : varchar(255)
+}
+
+' Relationships
+users ||--o{ customers
+users ||--o{ activity_logs
+users ||--o{ food_beverage_ratings
+
+rooms ||--|{ tables
+tables ||--|{ prices
+tables ||--|{ transactions
+tables ||--|{ reservations
+
+customers ||--|{ transactions
+customers ||--|{ reservations
+
+transactions ||--|| payments
+transactions ||--|{ transaction_details
+transactions }o--|| reservations
+
+food_beverages ||--|{ food_beverage_images
+food_beverages ||--|{ food_beverage_ratings
+
+@enduml

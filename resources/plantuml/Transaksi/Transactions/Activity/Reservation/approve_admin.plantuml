@@ -1,0 +1,25 @@
+@startuml Activity Diagram - Approve Reservation by Admin
+
+|Admin|
+start
+:Masuk ke menu Reservasi;
+:Klik "Lihat Detail" pada reservasi;
+:Klik "Approve" pada reservasi;
+
+|ReservationController|
+:Validasi status reservasi;
+if (Status valid?) then (ya)
+    :Update status reservasi menjadi 'approved';
+    :Update status transaksi menjadi 'active' atau 'waiting_payment';
+    :Update status meja menjadi 'terpakai';
+    :Catat waktu approval;
+    :Simpan log aktivitas (ActivityLog);
+    :Kirim notifikasi ke customer (NotificationService);
+    :Redirect ke daftar reservasi (sukses);
+else (tidak)
+    :Tampilkan error ke admin;
+endif
+
+stop
+
+@enduml

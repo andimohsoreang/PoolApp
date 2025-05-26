@@ -1,0 +1,29 @@
+@startuml Sequence Diagram - CRUD Table Usage Report
+
+actor User
+participant "ReportController" as Controller
+participant "Table" as TableModel
+participant "Transaction" as TransactionModel
+database "transactions table" as DB
+
+== READ (View Table Usage Report) ==
+User -> Controller : GET /admin/reports/tables
+Controller -> TableModel : getTables(filters)
+TableModel -> DB : SELECT * FROM tables WHERE room_id = ? AND deleted_at IS NULL
+DB --> TableModel : List of tables
+TableModel --> Controller : List of tables
+Controller -> TransactionModel : getTransactions(filters)
+TransactionModel -> DB : SELECT * FROM transactions WHERE created_at BETWEEN ? AND ?
+DB --> TransactionModel : List of transactions
+TransactionModel --> Controller : List of transactions
+Controller -> User : Tampilkan laporan penggunaan meja
+
+== EXPORT (Export Table Usage Report) ==
+User -> Controller : Request CSV export
+Controller -> TransactionModel : generateCSV(filters)
+TransactionModel -> DB : SELECT * FROM transactions WHERE created_at BETWEEN ? AND ?
+DB --> TransactionModel : List of transactions for CSV
+TransactionModel --> Controller : Generate CSV file
+Controller -> User : Download CSV file
+
+@enduml

@@ -1,0 +1,109 @@
+@startuml Class Diagram - Walk-In Payment (E-Payment with Midtrans)
+
+left to right direction
+
+' Styling
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor #E3F2FD
+    BorderColor #1976D2
+}
+
+' === WalkinController ===
+class WalkinController {
+    +processEPayment(request)
+    +index()
+    +show(id)
+    +otherActions()
+}
+
+' === WalkinService ===
+class WalkinService {
+    +processEPayment(request): bool
+    +validateEPaymentRequest(request): bool
+    +createMidtransPayment(data): string
+    +logPaymentActivity(data)
+}
+
+' === Transaction ===
+class Transaction {
+    +id: int
+    +table_id: int
+    +customer_id: int
+    +status: string
+    +total: decimal
+    +created_at: datetime
+    +updated_at: datetime
+    +completed_at: datetime
+    --
+    +find(id): Transaction
+    +updateStatus(status)
+}
+
+' === Payment ===
+class Payment {
+    +id: int
+    +transaction_id: int
+    +amount: decimal
+    +payment_method: string
+    +payment_status: string
+    +payment_url: string
+    +paid_at: datetime
+    +created_at: datetime
+    +updated_at: datetime
+    --
+    +createOrUpdate(data)
+    +updateStatus(status)
+}
+
+' === Table ===
+class Table {
+    +id: int
+    +room_id: int
+    +name: string
+    +status: string
+    +created_at: datetime
+    +updated_at: datetime
+    --
+    +updateStatus(status)
+}
+
+' === ActivityLog ===
+class ActivityLog {
+    +id: int
+    +user_id: int
+    +activity: string
+    +created_at: datetime
+    --
+    +create(data)
+}
+
+' === MidtransAPI ===
+class MidtransAPI {
+    +createPaymentRequest(data): string
+    +verifySignature(data): bool
+}
+
+' === PaymentCallbackController ===
+class PaymentCallbackController {
+    +handleCallback(request)
+    +validateSignature(request): bool
+    +updatePaymentStatus(data)
+}
+
+' === Relasi ===
+WalkinController ..> WalkinService : uses
+WalkinService ..> Transaction : uses
+WalkinService ..> Payment : uses
+WalkinService ..> Table : uses
+WalkinService ..> ActivityLog : uses
+WalkinService ..> MidtransAPI : uses
+PaymentCallbackController ..> Payment : uses
+PaymentCallbackController ..> Transaction : uses
+PaymentCallbackController ..> Table : uses
+PaymentCallbackController ..> ActivityLog : uses
+PaymentCallbackController ..> MidtransAPI : uses
+Transaction "1" o-- "many" Payment : has
+Transaction "1" o-- "1" Table : uses
+
+@enduml

@@ -1,0 +1,80 @@
+@startuml Class Diagram - Menu F&B
+
+left to right direction
+
+' Styling
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor #E3F2FD
+    BorderColor #1976D2
+}
+
+' === Model FoodBeverage ===
+class FoodBeverage {
+    +id: int
+    +name: string
+    +category: string
+    +price: decimal
+    +description: string
+    +created_at: datetime
+    +updated_at: datetime
+    +deleted_at: datetime
+    --
+    +images(): FoodBeverageImage[]
+    +ratings(): FoodBeverageRating[]
+}
+
+' === Model FoodBeverageImage ===
+class FoodBeverageImage {
+    +id: int
+    +food_beverage_id: int
+    +image_path: string
+    +is_primary: bool
+    +created_at: datetime
+    +updated_at: datetime
+    +deleted_at: datetime
+    --
+    +foodBeverage(): FoodBeverage
+}
+
+' === Model FoodBeverageRating ===
+class FoodBeverageRating {
+    +id: int
+    +food_beverage_id: int
+    +customer_id: int
+    +rating: int
+    +comment: string
+    +approved: bool
+    +created_at: datetime
+    +updated_at: datetime
+    +deleted_at: datetime
+    --
+    +foodBeverage(): FoodBeverage
+}
+
+' === FoodBeverageController ===
+class FoodBeverageController {
+    +index()
+    +create()
+    +store(request)
+    +edit(id)
+    +update(request, id)
+    +destroy(id)
+    +show(id)
+    +manageRatings(id)
+    +toggleRatingApproval(ratingId)
+    +deleteRating(ratingId)
+    +deleteImage(imageId)
+    +setPrimaryImage(imageId)
+}
+
+' === Relasi ===
+FoodBeverage "1" o-- "many" FoodBeverageImage : has
+FoodBeverage "1" o-- "many" FoodBeverageRating : has
+FoodBeverageImage "many" --> "1" FoodBeverage : belongs to
+FoodBeverageRating "many" --> "1" FoodBeverage : belongs to
+FoodBeverageController ..> FoodBeverage : uses
+FoodBeverageController ..> FoodBeverageImage : uses
+FoodBeverageController ..> FoodBeverageRating : uses
+
+@enduml

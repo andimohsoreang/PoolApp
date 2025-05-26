@@ -1,0 +1,61 @@
+@startuml Activity Diagram - Walk-In E-Payment (with Midtrans Progress)
+
+|User|
+start
+:Masuk ke menu Transaksi Aktif/Walk-In;
+:Klik "Bayar E-Payment" pada transaksi aktif;
+:Konfirmasi pembayaran e-payment;
+:Submit pembayaran e-payment;
+
+|WalkinController|
+:Validasi request pembayaran;
+if (Valid?) then (ya)
+    :Proses pembayaran e-payment via WalkinService;
+    |WalkinService|
+    :Ambil data transaksi via Model Transaction;
+    :Cek status transaksi (belum lunas & aktif)?;
+    if (Bisa diproses?) then (ya)
+        :Buat request pembayaran ke Midtrans API;
+        |Midtrans|
+        :Generate payment link/QR code;
+        :Kembalikan payment_url/QR code ke WalkinService;
+        |WalkinService|
+        :Simpan payment_url/QR code ke Model Payment;
+        :Tampilkan QR code/payment link ke user;
+        |User|
+        :Scan QR code / klik link pembayaran;
+        :Lakukan pembayaran via aplikasi e-wallet/bank;
+        |Midtrans|
+        :Proses pembayaran;
+        :Update status pembayaran (pending, paid, expired, failed);
+        :Kirim notifikasi/callback ke endpoint sistem (webhook);
+        |PaymentCallbackController|
+        :Terima notifikasi dari Midtrans;
+        :Validasi signature/key;
+        :Ambil data transaksi terkait;
+        if (Status = paid) then (ya)
+            :Update payment_status = 'paid' di Model Payment;
+            :Update status transaksi menjadi 'paid' dan/atau 'completed';
+            :Update status meja menjadi 'kosong' (jika transaksi selesai);
+            :Catat waktu pembayaran (paid_at);
+            :Simpan log aktivitas pembayaran (opsional, via ActivityLog);
+            :Kirim notifikasi sukses ke user (opsional);
+        else (tidak)
+            :Update status transaksi/payment sesuai status Midtrans (pending/expired/failed);
+            :Kirim notifikasi gagal/expired ke user (opsional);
+        endif
+        |User|
+        :Lihat status pembayaran (real-time/progress);
+        :Jika sukses, diarahkan ke halaman sukses/struk pembayaran;
+    else (tidak)
+        :Kembalikan error (sudah lunas/invalid);
+        |WalkinController|
+        :Tampilkan error ke user;
+    endif
+else (tidak)
+    :Tampilkan error validasi ke user;
+endif
+
+stop
+
+@enduml

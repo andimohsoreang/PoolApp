@@ -1,0 +1,38 @@
+@startuml Activity Diagram - Walk-In Payment (Cash)
+
+|User|
+start
+:Masuk ke menu Transaksi Aktif/Walk-In;
+:Klik "Bayar Cash" pada transaksi aktif;
+:Konfirmasi pembayaran cash;
+:Submit pembayaran cash;
+
+|WalkinController|
+:Validasi request pembayaran;
+if (Valid?) then (ya)
+    :Proses pembayaran cash via WalkinService;
+    |WalkinService|
+    :Ambil data transaksi via Model Transaction;
+    :Cek status transaksi (belum lunas & aktif)?;
+    if (Bisa diproses?) then (ya)
+        :Buat/Update data pembayaran via Model Payment;
+        :Set payment_method = 'cash', payment_status = 'paid';
+        :Update status transaksi menjadi 'paid' dan/atau 'completed';
+        :Update status meja menjadi 'kosong' (jika transaksi selesai);
+        :Catat waktu pembayaran (paid_at);
+        :Simpan log aktivitas pembayaran (opsional, via ActivityLog);
+        :Kembalikan status sukses ke Controller;
+        |WalkinController|
+        :Redirect ke halaman sukses/struk pembayaran;
+    else (tidak)
+        :Kembalikan error (sudah lunas/invalid);
+        |WalkinController|
+        :Tampilkan error ke user;
+    endif
+else (tidak)
+    :Tampilkan error validasi ke user;
+endif
+
+stop
+
+@enduml

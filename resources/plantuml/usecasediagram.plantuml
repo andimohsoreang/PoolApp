@@ -1,0 +1,112 @@
+@startuml Pool Open System Use Case Diagram (F4 Compact Vertical)
+
+left to right direction
+
+' Styling
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+skinparam usecase {
+    BackgroundColor #E3F2FD
+    BorderColor #1976D2
+    ArrowColor #1976D2
+    ActorBorderColor #1976D2
+    ActorBackgroundColor #E3F2FD
+}
+
+skinparam package {
+    BackgroundColor White
+    BorderColor #1976D2
+}
+
+' Layout
+skinparam linetype ortho
+skinparam nodesep 80
+skinparam ranksep 100
+
+' Actors
+actor "Super Admin" as SA
+actor "Owner" as OW
+actor "Admin Pool" as AP
+actor "Customer" as CU
+
+' System Boundary
+rectangle "Pool Open System" {
+    ' FOCUS: Core Business Operations
+    package "Core" {
+        usecase "Billiard Tables" as UC1
+        usecase "Transactions" as UC2
+        usecase "Reservations" as UC3
+        usecase "F&B Menu" as UC4
+    }
+
+    ' FUNCTION: Administrative Tasks
+    package "Admin" {
+        usecase "User Mgmt" as UC5
+        usecase "Staff Mgmt" as UC6
+        usecase "Customer Mgmt" as UC7
+        usecase "Settings" as UC8
+    }
+
+    ' FEATURES: Value-Added Services
+    package "Features" {
+        usecase "Payment" as UC9
+        usecase "F&B Order" as UC10
+        usecase "Rating" as UC11
+    }
+
+    ' FUTURE: Analytics & Reporting
+    package "Analytics" {
+        usecase "Sales Report" as UC12
+        usecase "Usage Stats" as UC13
+    }
+}
+
+' Super Admin Relationships
+SA --> UC1
+SA --> UC2
+SA --> UC3
+SA --> UC4
+SA --> UC5
+SA --> UC6
+SA --> UC7
+SA --> UC8
+SA --> UC12
+SA --> UC13
+
+' Owner Relationships
+OW --> UC1
+OW --> UC2
+OW --> UC3
+OW --> UC4
+OW --> UC6
+OW --> UC9
+OW --> UC12
+OW --> UC13
+
+' Admin Pool Relationships
+AP --> UC1
+AP --> UC2
+AP --> UC3
+AP --> UC4
+AP --> UC9
+AP --> UC10
+AP --> UC11
+AP --> UC12
+AP --> UC13
+
+' Customer Relationships (with green lines)
+CU -[#green,thickness=2]-> UC3
+CU -[#green,thickness=2]-> UC10
+CU -[#green,thickness=2]-> UC11
+
+' Legend
+legend right
+    |= F4 Category |= Description |
+    |<#LightBlue> Focus | Core business operations |
+    |<#LightBlue> Function | Administrative tasks |
+    |<#LightBlue> Features | Value-added services |
+    |<#LightBlue> Future | Analytics & reporting |
+    |<#green> Green Line | Customer access |
+endlegend
+
+@enduml

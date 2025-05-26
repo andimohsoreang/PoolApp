@@ -1,0 +1,68 @@
+@startuml Activity Diagram - Customer Reservation Flow
+
+|Customer|
+start
+:Masuk ke menu Reservasi;
+:Request ke ReservationController (index);
+
+|ReservationController|
+:Ambil daftar meja dari Model Table (hanya yang tersedia);
+:Kirim data ke View (daftar meja);
+
+|Customer|
+:Pilih meja yang diinginkan;
+:Klik "Buat Reservasi";
+:Input tanggal, waktu mulai, durasi, data lain;
+:Submit form reservasi;
+
+|ReservationController|
+:Validasi data reservasi;
+:Periksa ketersediaan meja pada waktu yang dipilih;
+if (Meja tersedia?) then (ya)
+    :Simpan data reservasi (status: pending);
+    :Tampilkan halaman konfirmasi reservasi;
+    :Tunggu approval dari admin;
+else (tidak)
+    :Tampilkan pesan meja tidak tersedia;
+    :Kembali ke form reservasi;
+endif
+
+partition "Proses Approval Admin" {
+    :Admin menerima permintaan reservasi;
+    :Admin dapat Approve atau Reject;
+    if (Approved?) then (ya)
+        :Status reservasi menjadi 'approved';
+        :Notifikasi ke customer (Notification);
+        :Tampilkan tombol pembayaran (e-payment/cash) ke customer;
+    else (Rejected)
+        :Status reservasi menjadi 'rejected';
+        :Notifikasi ke customer (Notification);
+        :Tampilkan alasan penolakan ke customer;
+        :Reservasi selesai (gagal);
+    endif
+}
+
+partition "Pembayaran E-Payment" {
+    :Customer klik "Bayar E-Payment";
+    :Request ke PaymentController;
+    :Validasi request pembayaran;
+    :Buat request pembayaran ke MidtransAPI;
+    :Tampilkan QR code/payment link ke customer;
+    :Customer scan QR code / klik link pembayaran;
+    :Lakukan pembayaran via aplikasi e-wallet/bank;
+    :Midtrans proses pembayaran;
+    :Midtrans kirim notifikasi/callback ke sistem;
+    :Sistem update status pembayaran dan reservasi;
+    if (Pembayaran sukses?) then (ya)
+        :Status reservasi menjadi 'paid';
+        :Notifikasi sukses ke customer;
+        :Tampilkan struk pembayaran;
+    else (tidak)
+        :Status reservasi tetap 'approved' atau 'pending';
+        :Tampilkan pesan gagal/expired ke customer;
+    endif
+}
+
+stop
+
+@enduml

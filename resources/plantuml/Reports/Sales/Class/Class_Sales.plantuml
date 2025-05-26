@@ -1,0 +1,103 @@
+@startuml SalesReportClass
+
+skinparam backgroundColor #FAFAFA
+skinparam classAttributeIconSize 0
+
+' === CONTROLLER ===
+class ReportController {
+    +sales(Request): View
+    +exportSalesCsv(Request): CSV
+    +tables(Request): View
+    +customers(Request): View
+}
+
+' === SERVICE (opsional, jika ada pemisahan service) ===
+class SalesReportService {
+    +getSalesData(filters): Collection
+    +calculateSummary(transactions): array
+    +exportToCsv(transactions): CSV
+}
+
+' === MODELS ===
+class Transaction {
+    +id: int
+    +transaction_code: string
+    +created_at: datetime
+    +start_time: datetime
+    +end_time: datetime
+    +transaction_type: string
+    +payment_method: string
+    +status: string
+    +total_price: int
+    +table_id: int
+    +customer_id: int
+    +payment_id: int
+    +table(): Table
+    +customer(): Customer
+    +payment(): Payment
+}
+
+class Table {
+    +id: int
+    +table_number: string
+    +room_id: int
+    +room(): Room
+    +transactions(): Transaction[]
+}
+
+class Room {
+    +id: int
+    +name: string
+    +tables(): Table[]
+}
+
+class Customer {
+    +id: int
+    +name: string
+    +email: string
+    +phone: string
+    +category: string
+    +transactions(): Transaction[]
+}
+
+class Payment {
+    +id: int
+    +method: string
+    +transactions(): Transaction[]
+}
+
+class User {
+    +id: int
+    +name: string
+    +email: string
+    +role: string
+}
+
+' === VIEW ===
+class sales_blade_php {
+    <<View>>
+    +show summary cards
+    +show charts
+    +show tables
+    +export CSV
+}
+
+' === RELATIONSHIPS ===
+ReportController --> Transaction : uses
+ReportController --> Table : uses
+ReportController --> Room : uses
+ReportController --> Customer : uses
+ReportController --> Payment : uses
+ReportController --> User : uses
+ReportController --> sales_blade_php : renders
+
+Transaction --> Table : belongs to
+Transaction --> Customer : belongs to
+Transaction --> Payment : belongs to
+Table --> Room : belongs to
+Table --> Transaction : has many
+Room --> Table : has many
+Customer --> Transaction : has many
+Payment --> Transaction : has many
+
+@enduml

@@ -1,0 +1,54 @@
+@startuml TableUsageReportClass
+
+skinparam backgroundColor #FAFAFA
+skinparam classAttributeIconSize 0
+
+' === CONTROLLER ===
+class ReportController {
+    +tables(Request): View
+    +exportTablesCsv(Request): CSV
+}
+
+' === MODELS ===
+class Transaction {
+    +id: int
+    +created_at: datetime
+    +start_time: datetime
+    +end_time: datetime
+    +total_price: int
+    +table_id: int
+    +table(): Table
+}
+
+class Table {
+    +id: int
+    +table_number: string
+    +room_id: int
+    +transactions(): Transaction[]
+}
+
+class Room {
+    +id: int
+    +name: string
+    +tables(): Table[]
+}
+
+' === VIEW ===
+class tables_blade_php {
+    <<View>>
+    +show table usage report
+    +show charts
+    +export CSV
+}
+
+' === RELATIONSHIPS ===
+ReportController --> Transaction : uses
+ReportController --> Table : uses
+ReportController --> Room : uses
+ReportController --> tables_blade_php : renders
+
+Transaction --> Table : belongs to
+Table --> Room : belongs to
+Table --> Transaction : has many
+
+@enduml

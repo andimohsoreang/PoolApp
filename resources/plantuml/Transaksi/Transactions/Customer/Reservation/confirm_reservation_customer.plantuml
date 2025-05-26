@@ -1,0 +1,10 @@
+@startuml Activity Diagram - Customer: Konfirmasi Reservasi
+
+|Customer|
+start
+:Setelah submit reservasi;
+:Tampilkan halaman konfirmasi reservasi (status: pending);
+:Menunggu approval/reject dari admin;
+
+stop
+@enduml

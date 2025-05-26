@@ -1,0 +1,46 @@
+@startuml CustomerReportClass
+
+skinparam backgroundColor #FAFAFA
+skinparam classAttributeIconSize 0
+
+' === CONTROLLER ===
+class ReportController {
+    +customers(Request): View
+    +exportCustomersCsv(Request): CSV
+}
+
+' === MODELS ===
+class Customer {
+    +id: int
+    +name: string
+    +email: string
+    +phone: string
+    +category: string
+    +transactions(): Transaction[]
+}
+
+class Transaction {
+    +id: int
+    +created_at: datetime
+    +total_price: int
+    +customer_id: int
+    +customer(): Customer
+}
+
+' === VIEW ===
+class customers_blade_php {
+    <<View>>
+    +show summary statistics
+    +show customer details table
+    +show charts
+    +export CSV
+}
+
+' === RELATIONSHIPS ===
+ReportController --> Customer : uses
+ReportController --> Transaction : uses
+ReportController --> customers_blade_php : renders
+
+Customer --> Transaction : has many
+
+@enduml

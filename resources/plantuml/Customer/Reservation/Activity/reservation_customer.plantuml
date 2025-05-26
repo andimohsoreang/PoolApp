@@ -1,0 +1,80 @@
+@startuml Activity Diagram - Sistem Reservasi
+
+|Customer|
+start
+:Masuk ke Sistem;
+:Pilih Meja;
+
+|System|
+:Cek Ketersediaan Meja;
+if (Tersedia?) then (ya)
+    :Tampilkan Form Reservasi;
+
+    |Customer|
+    :Input Detail Reservasi
+    (tanggal, waktu, durasi);
+
+    |System|
+    :Validasi Input;
+    if (Valid?) then (ya)
+        :Simpan Reservasi
+        (status: pending);
+        :Kirim Notifikasi ke Admin;
+
+        |Admin|
+        :Review Reservasi;
+        if (Setuju?) then (ya)
+            :Approve Reservasi;
+            :Generate Payment Token;
+
+            |Customer|
+            :Terima Notifikasi Approval;
+            :Pilih Metode Pembayaran;
+
+            if (E-Payment?) then (ya)
+                :Bayar via Midtrans;
+
+                |System|
+                :Proses Pembayaran;
+                if (Sukses?) then (ya)
+                    :Update Status (paid);
+                    :Kirim Konfirmasi;
+                else (tidak)
+                    :Update Status (expired);
+                endif
+            else (tidak)
+                :Bayar Cash di Tempat;
+
+                |Admin|
+                :Konfirmasi Pembayaran;
+                :Update Status (paid);
+            endif
+
+        else (tidak)
+            :Reject Reservasi;
+            :Input Alasan;
+
+            |System|
+            :Update Status (rejected);
+            :Kirim Notifikasi ke Customer;
+        endif
+    else (tidak)
+        :Tampilkan Error;
+        stop
+    endif
+else (tidak)
+    :Tampilkan Pesan
+    Meja Tidak Tersedia;
+    stop
+endif
+
+|System|
+if (Status = Paid?) then (ya)
+    :Reservasi Siap Digunakan;
+else (tidak)
+    :Reservasi Gagal/Dibatalkan;
+endif
+
+stop
+
+@enduml

@@ -1,0 +1,64 @@
+@startuml Sequence Diagram - CRUD Master Ruangan
+
+actor User
+participant "RoomController" as Controller
+participant "Room" as Model
+database "rooms table" as DB
+
+== READ (List Rooms) ==
+User -> Controller : GET /admin/rooms
+Controller -> Model : Room::all()
+Model -> DB : SELECT * FROM rooms WHERE deleted_at IS NULL
+DB --> Model : List data ruangan
+Model --> Controller : List data ruangan
+Controller -> User : Tampilkan daftar ruangan
+
+== CREATE (Add Room) ==
+User -> Controller : GET /admin/rooms/create
+Controller -> User : Tampilkan form tambah ruangan
+
+User -> Controller : POST /admin/rooms (data ruangan)
+Controller -> Controller : Validasi data
+alt Data valid
+    Controller -> Model : Room::create(data)
+    Model -> DB : INSERT INTO rooms ...
+    DB --> Model : Data ruangan baru
+    Model --> Controller : Data ruangan baru
+    Controller -> User : Redirect ke daftar ruangan (sukses)
+else Data tidak valid
+    Controller -> User : Kembali ke form + error validasi
+end
+
+== UPDATE (Edit Room) ==
+User -> Controller : GET /admin/rooms/{id}/edit
+Controller -> Model : Room::find(id)
+Model -> DB : SELECT * FROM rooms WHERE id=?
+DB --> Model : Data ruangan
+Model --> Controller : Data ruangan
+Controller -> User : Tampilkan form edit ruangan
+
+User -> Controller : PUT /admin/rooms/{id} (data baru)
+Controller -> Controller : Validasi data
+alt Data valid
+    Controller -> Model : Room::find(id)
+    Model -> DB : SELECT * FROM rooms WHERE id=?
+    DB --> Model : Data ruangan
+    Model --> Controller : Data ruangan
+    Controller -> Model : $room->update(data baru)
+    Model -> DB : UPDATE rooms SET ... WHERE id=?
+    Controller -> User : Redirect ke daftar ruangan (sukses)
+else Data tidak valid
+    Controller -> User : Kembali ke form + error validasi
+end
+
+== DELETE (Delete Room) ==
+User -> Controller : DELETE /admin/rooms/{id}
+Controller -> Model : Room::find(id)
+Model -> DB : SELECT * FROM rooms WHERE id=?
+DB --> Model : Data ruangan
+Model --> Controller : Data ruangan
+Controller -> Model : $room->delete()
+Model -> DB : Soft delete (UPDATE rooms SET deleted_at=NOW() WHERE id=?)
+Controller -> User : Redirect ke daftar ruangan (sukses)
+
+@enduml

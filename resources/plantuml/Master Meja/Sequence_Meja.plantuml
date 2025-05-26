@@ -1,0 +1,78 @@
+@startuml Sequence Diagram - CRUD Master Meja (Lengkap dengan Model)
+
+actor User
+participant "TableController" as Controller
+participant "Table" as TableModel
+participant "Room" as RoomModel
+database "tables table" as TableDB
+database "rooms table" as RoomDB
+
+== READ (List Tables) ==
+User -> Controller : GET /admin/billiard-tables
+Controller -> TableModel : Table::with('room')->get()
+TableModel -> TableDB : SELECT * FROM tables WHERE deleted_at IS NULL
+TableModel -> RoomModel : Ambil data Room terkait (room_id)
+RoomModel -> RoomDB : SELECT * FROM rooms WHERE id=?
+RoomDB --> RoomModel : Data Room
+RoomModel --> TableModel : Data Room
+TableDB --> TableModel : List data meja
+TableModel --> Controller : List meja + data ruangan
+Controller -> User : Tampilkan daftar meja
+
+== CREATE (Add Table) ==
+User -> Controller : GET /admin/billiard-tables/create
+Controller -> RoomModel : Room::all()
+RoomModel -> RoomDB : SELECT * FROM rooms WHERE deleted_at IS NULL
+RoomDB --> RoomModel : List data ruangan
+RoomModel --> Controller : List data ruangan
+Controller -> User : Tampilkan form tambah meja (pilih ruangan)
+
+User -> Controller : POST /admin/billiard-tables (data meja)
+Controller -> Controller : Validasi data
+alt Data valid
+    Controller -> TableModel : Table::create(data)
+    TableModel -> TableDB : INSERT INTO tables ...
+    TableDB --> TableModel : Data meja baru
+    TableModel --> Controller : Data meja baru
+    Controller -> User : Redirect ke daftar meja (sukses)
+else Data tidak valid
+    Controller -> User : Kembali ke form + error validasi
+end
+
+== UPDATE (Edit Table) ==
+User -> Controller : GET /admin/billiard-tables/{id}/edit
+Controller -> TableModel : Table::find(id)
+TableModel -> TableDB : SELECT * FROM tables WHERE id=?
+TableDB --> TableModel : Data meja
+TableModel -> RoomModel : Room::all()
+RoomModel -> RoomDB : SELECT * FROM rooms WHERE deleted_at IS NULL
+RoomDB --> RoomModel : List data ruangan
+RoomModel --> TableModel : List data ruangan
+TableModel --> Controller : Data meja + list ruangan
+Controller -> User : Tampilkan form edit meja
+
+User -> Controller : PUT /admin/billiard-tables/{id} (data baru)
+Controller -> Controller : Validasi data
+alt Data valid
+    Controller -> TableModel : Table::find(id)
+    TableModel -> TableDB : SELECT * FROM tables WHERE id=?
+    TableDB --> TableModel : Data meja
+    TableModel --> Controller : Data meja
+    Controller -> TableModel : $table->update(data baru)
+    TableModel -> TableDB : UPDATE tables SET ... WHERE id=?
+    Controller -> User : Redirect ke daftar meja (sukses)
+else Data tidak valid
+    Controller -> User : Kembali ke form + error validasi
+end
+
+== DELETE (Delete Table) ==
+User -> Controller : DELETE /admin/billiard-tables/{id}
+Controller -> TableModel : Table::find(id)
+TableModel -> TableDB : SELECT * FROM tables WHERE id=?
+TableDB --> TableModel : Data meja
+TableModel --> Controller : Data meja
+Controller -> TableModel : $table->delete()
+TableModel -> TableDB : Soft delete (UPDATE tables SET deleted_at=NOW() WHERE id=?)
+Controller -> User : Redirect ke daftar meja (sukses)
+
+@enduml

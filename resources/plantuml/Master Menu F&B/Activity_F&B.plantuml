@@ -1,0 +1,57 @@
+@startuml Activity Diagram - Menu F&B
+
+|User|
+start
+:Masuk ke menu F&B;
+:Request ke FoodBeverageController (index);
+
+|FoodBeverageController|
+:Ambil data F&B dari Model FoodBeverage;
+:Kirim data ke View (daftar F&B);
+
+|User|
+:Klik "Tambah Menu F&B";
+:Input data F&B (nama, harga, kategori, deskripsi, gambar, dst);
+:Submit form tambah;
+
+|FoodBeverageController|
+:Validasi data F&B;
+if (Valid?) then (ya)
+    :Simpan ke DB via Model FoodBeverage;
+    :Jika ada gambar, simpan ke storage dan relasi ke FoodBeverageImage;
+    :Redirect ke daftar F&B (sukses);
+else (tidak)
+    :Tampilkan error validasi;
+endif
+
+:Klik "Edit" pada salah satu menu F&B;
+:Form edit muncul dengan data lama;
+:Edit data, submit;
+
+:Validasi data F&B;
+if (Valid?) then (ya)
+    :Update data di DB via Model FoodBeverage;
+    :Jika ada gambar baru, update FoodBeverageImage;
+    :Redirect ke daftar F&B (sukses);
+else (tidak)
+    :Tampilkan error validasi;
+endif
+
+:Klik "Hapus" pada salah satu menu F&B;
+:Konfirmasi hapus;
+if (Konfirmasi?) then (ya)
+    :Soft delete data di DB via Model FoodBeverage;
+    :(Opsional) Hapus relasi gambar di FoodBeverageImage;
+    :Redirect ke daftar F&B (sukses);
+else (tidak)
+    :Batal hapus;
+endif
+
+:Klik "Lihat Detail" pada salah satu menu F&B;
+:Request ke Controller (show);
+:Ambil data F&B, gambar, dan rating dari Model;
+:Tampilkan detail menu F&B;
+
+stop
+
+@enduml

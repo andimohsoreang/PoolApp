@@ -1,0 +1,69 @@
+@startuml Sequence Diagram - Sistem Pembayaran Midtrans
+
+actor Customer
+actor Admin
+participant "PaymentController" as Controller
+participant "PaymentService" as Service
+participant "MidtransAPI" as Midtrans
+participant "Payment" as PaymentModel
+participant "Transaction" as TransactionModel
+database "Database" as DB
+
+== PEMBAYARAN E-PAYMENT ==
+Customer -> Controller : Request pembayaran
+Controller -> Controller : Validasi request
+alt Data valid
+    Controller -> Service : processEPayment(request)
+    Service -> TransactionModel : find(transaction_id)
+    TransactionModel -> DB : SELECT * FROM transactions WHERE id=?
+    DB --> TransactionModel : Data transaksi
+    TransactionModel --> Service : Data transaksi
+    
+    alt Status transaksi valid
+        Service -> Midtrans : createPaymentRequest(data)
+        Midtrans -> Midtrans : Generate payment token
+        Midtrans --> Service : Payment token/URL
+        Service -> PaymentModel : create(data, status='pending')
+        PaymentModel -> DB : INSERT INTO payments ...
+        Service --> Controller : Payment token/URL
+        Controller -> Customer : Tampilkan QR/payment link
+        
+        Customer -> Midtrans : Proses pembayaran
+        Midtrans -> Controller : Payment callback/webhook
+        Controller -> Controller : Validasi signature
+        Controller -> PaymentModel : find(payment_id)
+        PaymentModel -> DB : SELECT * FROM payments WHERE id=?
+        DB --> PaymentModel : Data pembayaran
+        
+        alt Status = paid
+            Controller -> PaymentModel : update(status='paid')
+            PaymentModel -> DB : UPDATE payments SET status='paid' ...
+            Controller -> TransactionModel : update(status='completed')
+            TransactionModel -> DB : UPDATE transactions SET status='completed' ...
+            Controller -> Customer : Notifikasi sukses
+        else Status = failed/expired
+            Controller -> PaymentModel : update(status=callback_status)
+            PaymentModel -> DB : UPDATE payments SET status=? ...
+            Controller -> TransactionModel : update(status=callback_status)
+            TransactionModel -> DB : UPDATE transactions SET status=? ...
+            Controller -> Customer : Notifikasi gagal
+        end
+    else Status tidak valid
+        Service --> Controller : Error: Invalid status
+        Controller -> Customer : Tampilkan error
+    end
+else Data tidak valid
+    Controller -> Customer : Tampilkan error validasi
+end
+
+== MONITORING PEMBAYARAN ==
+Admin -> Controller : Cek status pembayaran
+Controller -> PaymentModel : find(payment_id)
+PaymentModel -> DB : SELECT * FROM payments WHERE id=?
+DB --> PaymentModel : Data pembayaran
+PaymentModel --> Controller : Data pembayaran
+Controller -> Admin : Tampilkan status pembayaran
+
+@enduml
+@enduml
+@enduml

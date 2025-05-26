@@ -1,0 +1,46 @@
+@startuml Activity Diagram - Customer: Pembayaran E-Payment
+
+|Customer|
+start
+:Pilih reservasi yang sudah di-approve;
+:Klik "Bayar E-Payment";
+:Request ke PaymentController;
+
+|PaymentController|
+:Validasi status reservasi/transaksi;
+if (Valid?) then (ya)
+    :Buat request pembayaran ke MidtransAPI;
+    |MidtransAPI|
+    :Generate payment link/QR code;
+    :Kembalikan payment_url/QR code ke PaymentController;
+    |PaymentController|
+    :Tampilkan QR code/payment link ke customer;
+    |Customer|
+    :Scan QR code / klik link pembayaran;
+    :Lakukan pembayaran via aplikasi e-wallet/bank;
+    |MidtransAPI|
+    :Proses pembayaran;
+    :Update status pembayaran (pending, paid, expired, failed);
+    :Kirim notifikasi/callback ke endpoint sistem (webhook);
+    |PaymentCallbackController|
+    :Terima notifikasi dari Midtrans;
+    :Validasi signature/key;
+    :Ambil data reservasi/transaksi terkait;
+    if (Status = paid) then (ya)
+        :Update payment_status = 'paid' di Model Payment;
+        :Update status reservasi/transaksi menjadi 'paid' dan/atau 'completed';
+        :Catat waktu pembayaran (paid_at);
+        :Kirim notifikasi sukses ke customer;
+    else (tidak)
+        :Update status reservasi/transaksi sesuai status Midtrans (pending/expired/failed);
+        :Kirim notifikasi gagal/expired ke customer;
+    endif
+    |Customer|
+    :Lihat status pembayaran (real-time/progress);
+    :Jika sukses, diarahkan ke halaman sukses/struk pembayaran;
+else (tidak)
+    :Tampilkan error ke customer;
+endif
+
+stop
+@enduml

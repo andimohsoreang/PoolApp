@@ -1,0 +1,49 @@
+@startuml Activity Diagram - Master Ruangan
+
+|User|
+start
+:Masuk ke menu Master Ruangan;
+:Request ke Controller (index);
+
+|Controller|
+:Ambil data Room dari Model;
+:Kirim data ke View (daftar ruangan);
+
+|User|
+:Klik "Tambah Ruangan";
+:Input data ruangan baru;
+:Submit form;
+
+|Controller|
+:Validasi data;
+if (Valid?) then (ya)
+    :Simpan ke DB via Model Room;
+    :Redirect ke daftar ruangan (sukses);
+else (tidak)
+    :Tampilkan error validasi;
+endif
+
+:Klik "Edit" pada salah satu ruangan;
+:Form edit muncul dengan data lama;
+:Edit data, submit;
+
+:Validasi data;
+if (Valid?) then (ya)
+    :Update data di DB via Model Room;
+    :Redirect ke daftar ruangan (sukses);
+else (tidak)
+    :Tampilkan error validasi;
+endif
+
+:Klik "Hapus" pada salah satu ruangan;
+:Konfirmasi hapus;
+if (Konfirmasi?) then (ya)
+    :Soft delete data di DB via Model Room;
+    :Redirect ke daftar ruangan (sukses);
+else (tidak)
+    :Batal hapus;
+endif
+
+stop
+
+@enduml

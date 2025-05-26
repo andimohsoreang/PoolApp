@@ -1,0 +1,22 @@
+@startuml Activity Diagram - Customer: Buat Reservasi & Cek Ketersediaan
+
+|Customer|
+start
+:Pilih meja;
+:Input tanggal, waktu mulai, durasi, data lain;
+:Submit form reservasi;
+
+|ReservationController|
+:Validasi data input;
+:Check ketersediaan meja via Model Table/Service;
+if (Meja tersedia?) then (ya)
+    :Simpan data reservasi ke Model Reservation;
+    :Set status reservasi = 'pending';
+    :Kirim notifikasi ke admin (Notification/Service);
+    :Tampilkan konfirmasi reservasi ke customer;
+else (tidak)
+    :Tampilkan pesan meja tidak tersedia;
+endif
+
+stop
+@enduml

@@ -1,0 +1,52 @@
+@startuml Sequence Diagram - Walk-In E-Payment (with Midtrans)
+
+actor User
+participant "WalkinController" as Controller
+participant "WalkinService" as Service
+participant "Transaction" as TransactionModel
+participant "Payment" as PaymentModel
+participant "Table" as TableModel
+participant "Midtrans" as MidtransAPI
+participant "PaymentCallbackController" as CallbackController
+participant "ActivityLog" as LogModel
+
+User -> Controller : Pilih transaksi aktif, klik "Bayar E-Payment"
+Controller -> Controller : Validasi request pembayaran
+alt Data valid
+    Controller -> Service : processEPayment(request)
+    Service -> TransactionModel : find(transaction_id)
+    TransactionModel -> TransactionModel : cek status (belum lunas & aktif)
+    alt Bisa diproses
+        Service -> MidtransAPI : createPaymentRequest(data transaksi)
+        MidtransAPI -> MidtransAPI : generate payment_url/QR code
+        MidtransAPI --> Service : payment_url/QR code
+        Service -> PaymentModel : createOrUpdate(transaction_id, method='e-payment', status='pending', payment_url)
+        Service --> Controller : payment_url/QR code
+        Controller -> User : Tampilkan QR code/payment link
+        User -> MidtransAPI : Scan QR code / klik link pembayaran
+        MidtransAPI -> MidtransAPI : proses pembayaran (e-wallet/bank)
+        MidtransAPI -> CallbackController : Kirim notifikasi/callback (status: pending/paid/expired/failed)
+        CallbackController -> CallbackController : Validasi signature/key
+        CallbackController -> TransactionModel : find(transaction_id)
+        alt Status = paid
+            CallbackController -> PaymentModel : update status 'paid', set paid_at
+            CallbackController -> TransactionModel : update status 'paid'/'completed'
+            CallbackController -> TableModel : update status 'kosong' (jika transaksi selesai)
+            CallbackController -> LogModel : create log pembayaran (opsional)
+            CallbackController -> User : Notifikasi sukses (opsional)
+        else Status = pending/expired/failed
+            CallbackController -> PaymentModel : update status sesuai Midtrans
+            CallbackController -> TransactionModel : update status sesuai Midtrans
+            CallbackController -> User : Notifikasi gagal/expired (opsional)
+        end
+        User -> Controller : Cek status pembayaran (real-time/progress)
+        Controller -> User : Redirect ke halaman sukses/struk pembayaran (jika sukses)
+    else Tidak bisa diproses
+        Service --> Controller : error (sudah lunas/invalid)
+        Controller -> User : Tampilkan error ke user
+    end
+else Data tidak valid
+    Controller -> User : Tampilkan error validasi ke user
+end
+
+@enduml

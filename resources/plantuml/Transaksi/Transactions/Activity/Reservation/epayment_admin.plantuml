@@ -1,0 +1,59 @@
+@startuml Activity Diagram - Payment E-Payment by Admin
+
+|Admin|
+start
+:Masuk ke menu Transaksi;
+:Klik "Bayar E-Payment" pada transaksi;
+
+|PaymentController|
+:Validasi request pembayaran e-payment;
+if (Valid?) then (ya)
+    :Proses pembayaran e-payment via PaymentService;
+    |PaymentService|
+    :Ambil data transaksi via Model Transaction;
+    :Cek status transaksi (waiting_payment/active);
+    if (Bisa diproses?) then (ya)
+        :Buat request pembayaran ke MidtransAPI;
+        |MidtransAPI|
+        :Generate payment link/QR code;
+        :Kembalikan payment_url/QR code ke PaymentService;
+        |PaymentService|
+        :Simpan payment_url/QR code ke Model Payment;
+        :Tampilkan QR code/payment link ke admin;
+        |Admin|
+        :Scan QR code / klik link pembayaran;
+        :Lakukan pembayaran via aplikasi e-wallet/bank;
+        |MidtransAPI|
+        :Proses pembayaran;
+        :Update status pembayaran (pending, paid, expired, failed);
+        :Kirim notifikasi/callback ke endpoint sistem (webhook);
+        |PaymentCallbackController|
+        :Terima notifikasi dari Midtrans;
+        :Validasi signature/key;
+        :Ambil data transaksi terkait;
+        if (Status = paid) then (ya)
+            :Update payment_status = 'paid' di Model Payment;
+            :Update status transaksi menjadi 'paid' dan/atau 'completed';
+            :Update status meja menjadi 'kosong';
+            :Catat waktu pembayaran (paid_at);
+            :Simpan log aktivitas pembayaran (ActivityLog);
+            :Kirim notifikasi sukses ke customer (NotificationService);
+        else (tidak)
+            :Update status transaksi/payment sesuai status Midtrans (pending/expired/failed);
+            :Kirim notifikasi gagal/expired ke customer (NotificationService);
+        endif
+        |Admin|
+        :Lihat status pembayaran (real-time/progress);
+        :Jika sukses, diarahkan ke halaman sukses/struk pembayaran;
+    else (tidak)
+        :Kembalikan error (sudah lunas/invalid);
+        |PaymentController|
+        :Tampilkan error ke admin;
+    endif
+else (tidak)
+    :Tampilkan error validasi ke admin;
+endif
+
+stop
+
+@enduml

@@ -1,0 +1,101 @@
+@startuml Class Diagram - Sistem Reservasi
+
+' Styling
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor #E3F2FD
+    BorderColor #1976D2
+}
+
+class Reservation {
+    +id: int
+    +customer_id: int
+    +table_id: int
+    +transaction_id: int
+    +start_time: datetime
+    +end_time: datetime
+    +duration_hours: float
+    +status: string
+    +price_per_hour: decimal
+    +total_price: decimal
+    +approved_at: datetime
+    +rejected_at: datetime
+    +rejection_reason: string
+    +created_at: datetime
+    +updated_at: datetime
+    --
+    +find(id): Reservation
+    +updateStatus(status)
+    +calculatePrice()
+}
+
+class Customer {
+    +id: int
+    +name: string
+    +email: string
+    +phone: string
+    +status: string
+    +created_at: datetime
+    +updated_at: datetime
+}
+
+class Table {
+    +id: int
+    +room_id: int
+    +table_number: string
+    +status: string
+    +created_at: datetime
+    +updated_at: datetime
+    --
+    +updateStatus(status)
+    +isAvailable(): bool
+}
+
+class Payment {
+    +id: int
+    +transaction_id: int
+    +amount: decimal
+    +payment_method: string
+    +payment_status: string
+    +payment_url: string
+    +paid_at: datetime
+    +created_at: datetime
+    +updated_at: datetime
+    --
+    +createOrUpdate(data)
+    +updateStatus(status)
+}
+
+class Transaction {
+    +id: int
+    +reservation_id: int
+    +customer_id: int
+    +total: decimal
+    +status: string
+    +created_at: datetime
+    +updated_at: datetime
+    +completed_at: datetime
+    --
+    +updateStatus(status)
+}
+
+class Notification {
+    +id: int
+    +user_id: int
+    +type: string
+    +message: string
+    +data: json
+    +read_at: datetime
+    +created_at: datetime
+    --
+    +markAsRead()
+    +send()
+}
+
+Reservation "1" -- "1" Customer
+Reservation "1" -- "1" Table
+Reservation "1" -- "1" Transaction
+Transaction "1" -- "*" Payment
+Customer "1" -- "*" Notification
+
+@enduml

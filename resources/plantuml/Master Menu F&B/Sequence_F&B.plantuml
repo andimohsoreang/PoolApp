@@ -1,0 +1,80 @@
+@startuml Sequence Diagram - CRUD Menu F&B
+
+actor User
+participant "FoodBeverageController" as Controller
+participant "FoodBeverage" as Model
+participant "FoodBeverageImage" as ImageModel
+database "food_beverages table" as FNBDB
+database "food_beverage_images table" as IMGDB
+
+== READ (List F&B) ==
+User -> Controller : GET /admin/food-beverages
+Controller -> Model : FoodBeverage::all()
+Model -> FNBDB : SELECT * FROM food_beverages WHERE deleted_at IS NULL
+FNBDB --> Model : List F&B
+Model --> Controller : List F&B
+Controller -> User : Tampilkan daftar F&B
+
+== CREATE (Add F&B) ==
+User -> Controller : GET /admin/food-beverages/create
+Controller -> User : Tampilkan form tambah F&B
+
+User -> Controller : POST /admin/food-beverages (data F&B, gambar)
+Controller -> Controller : Validasi data
+alt Data valid
+    Controller -> Model : FoodBeverage::create(data)
+    Model -> FNBDB : INSERT INTO food_beverages ...
+    FNBDB --> Model : Data F&B baru
+    Model --> Controller : Data F&B baru
+    alt Ada gambar
+        Controller -> ImageModel : FoodBeverageImage::create(data gambar, food_beverage_id)
+        ImageModel -> IMGDB : INSERT INTO food_beverage_images ...
+        IMGDB --> ImageModel : Data gambar baru
+        ImageModel --> Controller : Data gambar baru
+    end
+    Controller -> User : Redirect ke daftar F&B (sukses)
+else Data tidak valid
+    Controller -> User : Kembali ke form + error validasi
+end
+
+== UPDATE (Edit F&B) ==
+User -> Controller : GET /admin/food-beverages/{id}/edit
+Controller -> Model : FoodBeverage::find(id)
+Model -> FNBDB : SELECT * FROM food_beverages WHERE id=?
+FNBDB --> Model : Data F&B
+Model --> Controller : Data F&B
+Controller -> User : Tampilkan form edit F&B
+
+User -> Controller : PUT /admin/food-beverages/{id} (data baru, gambar baru)
+Controller -> Controller : Validasi data
+alt Data valid
+    Controller -> Model : FoodBeverage::find(id)
+    Model -> FNBDB : SELECT * FROM food_beverages WHERE id=?
+    FNBDB --> Model : Data F&B
+    Model --> Controller : Data F&B
+    Controller -> Model : $fnb->update(data baru)
+    Model -> FNBDB : UPDATE food_beverages SET ... WHERE id=?
+    alt Ada gambar baru
+        Controller -> ImageModel : FoodBeverageImage::updateOrCreate(food_beverage_id, data gambar)
+        ImageModel -> IMGDB : UPDATE/INSERT food_beverage_images ...
+        IMGDB --> ImageModel : Data gambar baru
+        ImageModel --> Controller : Data gambar baru
+    end
+    Controller -> User : Redirect ke daftar F&B (sukses)
+else Data tidak valid
+    Controller -> User : Kembali ke form + error validasi
+end
+
+== DELETE (Delete F&B) ==
+User -> Controller : DELETE /admin/food-beverages/{id}
+Controller -> Model : FoodBeverage::find(id)
+Model -> FNBDB : SELECT * FROM food_beverages WHERE id=?
+FNBDB --> Model : Data F&B
+Model --> Controller : Data F&B
+Controller -> Model : $fnb->delete()
+Model -> FNBDB : Soft delete (UPDATE food_beverages SET deleted_at=NOW() WHERE id=?)
+Controller -> ImageModel : FoodBeverageImage::where(food_beverage_id)->delete()
+ImageModel -> IMGDB : Soft delete (UPDATE food_beverage_images SET deleted_at=NOW() WHERE food_beverage_id=?)
+Controller -> User : Redirect ke daftar F&B (sukses)
+
+@enduml

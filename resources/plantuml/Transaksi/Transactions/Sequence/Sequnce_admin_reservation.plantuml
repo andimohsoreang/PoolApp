@@ -1,0 +1,114 @@
+@startuml Sequence Diagram - Admin Manage Reservation & Payment
+
+actor Admin
+participant "ReservationController" as ReservationCtrl
+participant "Reservation" as ReservationModel
+participant "Transaction" as TransactionModel
+participant "Table" as TableModel
+participant "Customer" as CustomerModel
+participant "NotificationService" as NotifService
+participant "ActivityLog" as LogModel
+participant "PaymentController" as PaymentCtrl
+participant "PaymentService" as PaymentService
+participant "Payment" as PaymentModel
+participant "MidtransAPI" as Midtrans
+participant "PaymentCallbackController" as CallbackCtrl
+
+' === Melihat & Approve/Reject Reservasi ===
+Admin -> ReservationCtrl : GET /admin/reservations
+ReservationCtrl -> ReservationModel : all()
+ReservationModel --> ReservationCtrl : List reservasi
+ReservationCtrl -> Admin : Tampilkan daftar reservasi
+
+Admin -> ReservationCtrl : GET /admin/reservations/{id}
+ReservationCtrl -> ReservationModel : find(id)
+ReservationModel -> CustomerModel : get customer
+ReservationModel -> TableModel : get table
+ReservationModel -> TransactionModel : get transaction
+ReservationModel --> ReservationCtrl : Data reservasi lengkap
+ReservationCtrl -> Admin : Tampilkan detail reservasi
+
+Admin -> ReservationCtrl : POST /admin/reservations/{id}/approve
+ReservationCtrl -> ReservationModel : find(id)
+ReservationModel -> ReservationModel : cek status
+alt Status valid
+    ReservationCtrl -> ReservationModel : update status 'approved', set approved_at
+    ReservationCtrl -> TransactionModel : update status 'active'/'waiting_payment'
+    ReservationCtrl -> TableModel : update status 'terpakai'
+    ReservationCtrl -> LogModel : create log aktivitas
+    ReservationCtrl -> NotifService : send notification to customer
+    ReservationCtrl -> Admin : Redirect ke daftar reservasi (sukses)
+else Status tidak valid
+    ReservationCtrl -> Admin : Tampilkan error
+end
+
+Admin -> ReservationCtrl : POST /admin/reservations/{id}/reject (alasan)
+ReservationCtrl -> ReservationModel : find(id)
+ReservationModel -> ReservationModel : cek status
+alt Status valid
+    ReservationCtrl -> ReservationModel : update status 'rejected', set rejected_at, alasan
+    ReservationCtrl -> TransactionModel : update status 'canceled'
+    ReservationCtrl -> TableModel : update status 'kosong'
+    ReservationCtrl -> LogModel : create log aktivitas
+    ReservationCtrl -> NotifService : send notification to customer
+    ReservationCtrl -> Admin : Redirect ke daftar reservasi (sukses)
+else Status tidak valid
+    ReservationCtrl -> Admin : Tampilkan error
+end
+
+' === Proses Pembayaran CASH ===
+Admin -> PaymentCtrl : POST /admin/transactions/{id}/pay-cash
+PaymentCtrl -> PaymentService : processCashPayment(transaction_id, data)
+PaymentService -> TransactionModel : find(transaction_id)
+TransactionModel -> TransactionModel : cek status (waiting_payment/active)
+alt Bisa diproses
+    PaymentService -> PaymentModel : createOrUpdate(transaction_id, method='cash', status='paid')
+    PaymentService -> TransactionModel : update status 'paid'/'completed'
+    PaymentService -> TableModel : update status 'kosong'
+    PaymentService -> PaymentModel : set paid_at
+    PaymentService -> LogModel : create log pembayaran
+    PaymentService -> NotifService : send payment notification to customer
+    PaymentService --> PaymentCtrl : status sukses
+    PaymentCtrl -> Admin : Redirect ke halaman sukses/struk pembayaran
+else Tidak bisa diproses
+    PaymentService --> PaymentCtrl : error
+    PaymentCtrl -> Admin : Tampilkan error
+end
+
+' === Proses Pembayaran E-PAYMENT ===
+Admin -> PaymentCtrl : POST /admin/transactions/{id}/pay-epayment
+PaymentCtrl -> PaymentService : processEPayment(transaction_id, data)
+PaymentService -> TransactionModel : find(transaction_id)
+TransactionModel -> TransactionModel : cek status (waiting_payment/active)
+alt Bisa diproses
+    PaymentService -> Midtrans : createPaymentRequest(data transaksi)
+    Midtrans -> Midtrans : generate payment_url/QR code
+    Midtrans --> PaymentService : payment_url/QR code
+    PaymentService -> PaymentModel : createOrUpdate(transaction_id, method='e-payment', status='pending', payment_url)
+    PaymentService --> PaymentCtrl : payment_url/QR code
+    PaymentCtrl -> Admin : Tampilkan QR code/payment link
+    Admin -> Midtrans : Scan QR code / klik link pembayaran
+    Midtrans -> Midtrans : proses pembayaran (e-wallet/bank)
+    Midtrans -> CallbackCtrl : Kirim notifikasi/callback (status: pending/paid/expired/failed)
+    CallbackCtrl -> CallbackCtrl : Validasi signature/key
+    CallbackCtrl -> TransactionModel : find(transaction_id)
+    alt Status = paid
+        CallbackCtrl -> PaymentModel : update status 'paid', set paid_at
+        CallbackCtrl -> TransactionModel : update status 'paid'/'completed'
+        CallbackCtrl -> TableModel : update status 'kosong'
+        CallbackCtrl -> LogModel : create log pembayaran
+        CallbackCtrl -> NotifService : send payment notification to customer
+        CallbackCtrl -> Admin : Notifikasi sukses (opsional)
+    else Status = pending/expired/failed
+        CallbackCtrl -> PaymentModel : update status sesuai Midtrans
+        CallbackCtrl -> TransactionModel : update status sesuai Midtrans
+        CallbackCtrl -> Admin : Notifikasi gagal/expired (opsional)
+    end
+    Admin -> PaymentCtrl : Cek status pembayaran (real-time/progress)
+    PaymentCtrl -> Admin : Redirect ke halaman sukses/struk pembayaran (jika sukses)
+else Tidak bisa diproses
+    PaymentService --> PaymentCtrl : error
+    PaymentCtrl -> Admin : Tampilkan error
+end
+
+@enduml

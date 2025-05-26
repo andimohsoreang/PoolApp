@@ -1,0 +1,99 @@
+@startuml Activity Diagram - Admin Walk-In Payment (Cash & E-Payment)
+
+|Admin|
+start
+:Masuk ke menu Transaksi Aktif/Walk-In;
+:Memilih transaksi aktif;
+
+split
+    '==== CASH PAYMENT ====
+    :Klik "Bayar Cash";
+    :Konfirmasi pembayaran cash;
+    :Submit pembayaran cash;
+
+    |WalkinController|
+    :Validasi request pembayaran cash;
+    if (Valid?) then (ya)
+        :Proses pembayaran cash via WalkinService;
+        |WalkinService|
+        :Ambil data transaksi via Model Transaction;
+        :Cek status transaksi (belum lunas & aktif)?;
+        if (Bisa diproses?) then (ya)
+            :Buat/Update data pembayaran via Model Payment;
+            :Set payment_method = 'cash', payment_status = 'paid';
+            :Update status transaksi menjadi 'paid' dan/atau 'completed';
+            :Update status meja menjadi 'kosong' (jika transaksi selesai);
+            :Catat waktu pembayaran (paid_at);
+            :Simpan log aktivitas pembayaran (opsional, via ActivityLog);
+            :Kembalikan status sukses ke Controller;
+            |WalkinController|
+            :Redirect ke halaman sukses/struk pembayaran;
+        else (tidak)
+            :Kembalikan error (sudah lunas/invalid);
+            |WalkinController|
+            :Tampilkan error ke admin;
+        endif
+    else (tidak)
+        :Tampilkan error validasi ke admin;
+    endif
+
+split again
+    '==== E-PAYMENT ====
+    :Klik "Bayar E-Payment";
+    :Konfirmasi pembayaran e-payment;
+    :Submit pembayaran e-payment;
+
+    |WalkinController|
+    :Validasi request pembayaran e-payment;
+    if (Valid?) then (ya)
+        :Proses pembayaran e-payment via WalkinService;
+        |WalkinService|
+        :Ambil data transaksi via Model Transaction;
+        :Cek status transaksi (belum lunas & aktif)?;
+        if (Bisa diproses?) then (ya)
+            :Buat request pembayaran ke Midtrans API;
+            |Midtrans|
+            :Generate payment link/QR code;
+            :Kembalikan payment_url/QR code ke WalkinService;
+            |WalkinService|
+            :Simpan payment_url/QR code ke Model Payment;
+            :Tampilkan QR code/payment link ke admin;
+            |Admin|
+            :Scan QR code / klik link pembayaran;
+            :Lakukan pembayaran via aplikasi e-wallet/bank;
+            |Midtrans|
+            :Proses pembayaran;
+            :Update status pembayaran (pending, paid, expired, failed);
+            :Kirim notifikasi/callback ke endpoint sistem (webhook);
+            |PaymentCallbackController|
+            :Terima notifikasi dari Midtrans;
+            :Validasi signature/key;
+            :Ambil data transaksi terkait;
+            if (Status = paid) then (ya)
+                :Update payment_status = 'paid' di Model Payment;
+                :Update status transaksi menjadi 'paid' dan/atau 'completed';
+                :Update status meja menjadi 'kosong' (jika transaksi selesai);
+                :Catat waktu pembayaran (paid_at);
+                :Simpan log aktivitas pembayaran (opsional, via ActivityLog);
+                :Kirim notifikasi sukses ke admin (opsional);
+            else (tidak)
+                :Update status transaksi/payment sesuai status Midtrans (pending/expired/failed);
+                :Kirim notifikasi gagal/expired ke admin (opsional);
+            endif
+            |Admin|
+            :Lihat status pembayaran (real-time/progress);
+            :Jika sukses, diarahkan ke halaman sukses/struk pembayaran;
+        else (tidak)
+            :Kembalikan error (sudah lunas/invalid);
+            |WalkinController|
+            :Tampilkan error ke admin;
+        endif
+    else (tidak)
+        :Tampilkan error validasi ke admin;
+    endif
+
+endsplit
+
+stop
+
+@enduml

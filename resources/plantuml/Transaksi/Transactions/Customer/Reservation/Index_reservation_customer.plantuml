@@ -1,0 +1,18 @@
+@startuml Activity Diagram - Customer: Lihat & Pilih Meja Reservasi
+
+|Customer|
+start
+:Masuk ke menu Reservasi;
+:Request ke ReservationController (index);
+
+|ReservationController|
+:Ambil daftar meja dari Model Table;
+:Ambil status ketersediaan meja;
+:Kirim data ke View (daftar meja & status);
+
+|Customer|
+:Tampilkan daftar meja & status;
+:Pilih meja yang diinginkan;
+
+stop
+@enduml

@@ -1,0 +1,53 @@
+@startuml Class Diagram - Master Meja
+
+left to right direction
+
+' Styling
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor #E3F2FD
+    BorderColor #1976D2
+}
+
+' === Model Room ===
+class Room {
+    +id: int
+    +name: string
+    +description: string
+    +created_at: datetime
+    +updated_at: datetime
+    +deleted_at: datetime
+    --
+    +tables(): Table[]
+}
+
+' === Model Table (Meja) ===
+class Table {
+    +id: int
+    +room_id: int
+    +name: string
+    +status: string
+    +created_at: datetime
+    +updated_at: datetime
+    +deleted_at: datetime
+    --
+    +room(): Room
+}
+
+' === TableController ===
+class TableController {
+    +index()
+    +create()
+    +store(request)
+    +edit(id)
+    +update(request, id)
+    +destroy(id)
+}
+
+' === Relasi ===
+Room "1" o-- "many" Table : has
+Table "many" --> "1" Room : belongs to
+TableController ..> Table : uses
+TableController ..> Room : uses
+
+@enduml

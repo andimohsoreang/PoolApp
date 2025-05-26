@@ -1,0 +1,66 @@
+@startuml Activity Diagram - Fitur Walk-In
+
+|User|
+start
+:Masuk ke menu Walk-In;
+:Request ke WalkinController (index);
+
+|WalkinController|
+:Ambil data meja & status dari Model Table;
+:Kirim data ke View (daftar meja & status);
+
+|User|
+:Klik "Buat Transaksi Walk-In" pada meja yang tersedia;
+:Input data transaksi (meja, waktu mulai, customer, F&B, dsb);
+:Submit form transaksi;
+
+|WalkinController|
+:Validasi data transaksi;
+if (Valid?) then (ya)
+  :Proses transaksi via WalkinService;
+  |WalkinService|
+  :Cek ketersediaan meja;
+  :Buat data transaksi via Model Transaction;
+  :Buat detail transaksi via Model TransactionDetail;
+  :Update status meja via Model Table;
+  :Jika ada F&B, buat order F&B via Model FoodBeverage;
+  :Simpan pembayaran via Model Payment;
+  :Kembalikan status sukses ke Controller;
+  |WalkinController|
+  :Redirect ke halaman sukses/transaksi aktif;
+else (tidak)
+  :Tampilkan error validasi;
+endif
+
+:Klik "Selesai" pada transaksi aktif;
+:Konfirmasi selesai transaksi;
+if (Konfirmasi?) then (ya)
+  :Proses selesai via WalkinService;
+  |WalkinService|
+  :Update status transaksi (selesai) via Model Transaction;
+  :Update status meja (kosong) via Model Table;
+  :Simpan detail pembayaran akhir via Model Payment;
+  :Kembalikan status sukses ke Controller;
+  |WalkinController|
+  :Redirect ke halaman daftar transaksi;
+else (tidak)
+  :Batal selesai;
+endif
+
+:Klik "Batalkan" pada transaksi aktif;
+:Konfirmasi pembatalan;
+if (Konfirmasi?) then (ya)
+  :Proses pembatalan via WalkinService;
+  |WalkinService|
+  :Update status transaksi (batal) via Model Transaction;
+  :Update status meja (kosong) via Model Table;
+  :Kembalikan status sukses ke Controller;
+  |WalkinController|
+  :Redirect ke halaman daftar transaksi;
+else (tidak)
+  :Batal pembatalan;
+endif
+
+stop
+
+@enduml

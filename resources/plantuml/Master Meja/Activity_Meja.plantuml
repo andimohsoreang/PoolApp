@@ -1,0 +1,49 @@
+@startuml Activity Diagram - Master Meja
+
+|User|
+start
+:Masuk ke menu Master Meja;
+:Request ke Controller (index);
+
+|TableController|
+:Ambil data meja dari Model Table;
+:Kirim data ke View (daftar meja);
+
+|User|
+:Klik "Tambah Meja";
+:Input data meja baru;
+:Submit form tambah;
+
+|TableController|
+:Validasi data meja;
+if (Valid?) then (ya)
+    :Simpan ke DB via Model Table;
+    :Redirect ke daftar meja (sukses);
+else (tidak)
+    :Tampilkan error validasi;
+endif
+
+:Klik "Edit" pada salah satu meja;
+:Form edit muncul dengan data lama;
+:Edit data meja, submit;
+
+:Validasi data meja;
+if (Valid?) then (ya)
+    :Update data di DB via Model Table;
+    :Redirect ke daftar meja (sukses);
+else (tidak)
+    :Tampilkan error validasi;
+endif
+
+:Klik "Hapus" pada salah satu meja;
+:Konfirmasi hapus meja;
+if (Konfirmasi?) then (ya)
+    :Soft delete data di DB via Model Table;
+    :Redirect ke daftar meja (sukses);
+else (tidak)
+    :Batal hapus;
+endif
+
+stop
+
+@enduml

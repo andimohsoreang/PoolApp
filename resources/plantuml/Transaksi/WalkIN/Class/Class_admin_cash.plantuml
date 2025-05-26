@@ -1,0 +1,87 @@
+@startuml Class Diagram - Walk-In Payment (Cash)
+
+left to right direction
+
+' Styling
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor #E3F2FD
+    BorderColor #1976D2
+}
+
+' === WalkinController ===
+class WalkinController {
+    +processCashPayment(request)
+    +index()
+    +show(id)
+    +otherActions()
+}
+
+' === WalkinService ===
+class WalkinService {
+    +processCashPayment(request): bool
+    +validatePaymentRequest(request): bool
+    +logPaymentActivity(data)
+}
+
+' === Transaction ===
+class Transaction {
+    +id: int
+    +table_id: int
+    +customer_id: int
+    +status: string
+    +total: decimal
+    +created_at: datetime
+    +updated_at: datetime
+    +completed_at: datetime
+    --
+    +find(id): Transaction
+    +updateStatus(status)
+}
+
+' === Payment ===
+class Payment {
+    +id: int
+    +transaction_id: int
+    +amount: decimal
+    +payment_method: string
+    +payment_status: string
+    +paid_at: datetime
+    +created_at: datetime
+    +updated_at: datetime
+    --
+    +createOrUpdate(data)
+}
+
+' === Table ===
+class Table {
+    +id: int
+    +room_id: int
+    +name: string
+    +status: string
+    +created_at: datetime
+    +updated_at: datetime
+    --
+    +updateStatus(status)
+}
+
+' === ActivityLog ===
+class ActivityLog {
+    +id: int
+    +user_id: int
+    +activity: string
+    +created_at: datetime
+    --
+    +create(data)
+}
+
+' === Relasi ===
+WalkinController ..> WalkinService : uses
+WalkinService ..> Transaction : uses
+WalkinService ..> Payment : uses
+WalkinService ..> Table : uses
+WalkinService ..> ActivityLog : uses
+Transaction "1" o-- "many" Payment : has
+Transaction "1" o-- "1" Table : uses
+
+@enduml

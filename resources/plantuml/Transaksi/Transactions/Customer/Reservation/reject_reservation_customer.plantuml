@@ -1,0 +1,11 @@
+@startuml Activity Diagram - Customer: Reservasi Di-Reject
+
+|Customer|
+start
+:Notifikasi diterima (reservasi di-reject);
+:Tampilkan status reservasi = 'rejected';
+:Tampilkan alasan penolakan (jika ada);
+:Reservasi selesai/gagal;
+
+stop
+@enduml

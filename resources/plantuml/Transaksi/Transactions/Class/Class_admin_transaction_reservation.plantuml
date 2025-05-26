@@ -1,0 +1,156 @@
+@startuml Class Diagram - Admin Manage Reservation & Payment
+
+left to right direction
+
+' Styling
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor #E3F2FD
+    BorderColor #1976D2
+}
+
+' === ReservationController ===
+class ReservationController {
+    +index()
+    +show(id)
+    +approve(id)
+    +reject(id, alasan)
+}
+
+' === Reservation ===
+class Reservation {
+    +id: int
+    +customer_id: int
+    +table_id: int
+    +transaction_id: int
+    +status: string
+    +approved_at: datetime
+    +rejected_at: datetime
+    +rejection_reason: string
+    +created_at: datetime
+    +updated_at: datetime
+    --
+    +find(id): Reservation
+    +updateStatus(status)
+}
+
+' === Transaction ===
+class Transaction {
+    +id: int
+    +reservation_id: int
+    +table_id: int
+    +customer_id: int
+    +status: string
+    +total: decimal
+    +created_at: datetime
+    +updated_at: datetime
+    +completed_at: datetime
+    --
+    +find(id): Transaction
+    +updateStatus(status)
+}
+
+' === Table ===
+class Table {
+    +id: int
+    +room_id: int
+    +name: string
+    +status: string
+    +created_at: datetime
+    +updated_at: datetime
+    --
+    +updateStatus(status)
+}
+
+' === Customer ===
+class Customer {
+    +id: int
+    +name: string
+    +email: string
+    +phone: string
+    +created_at: datetime
+    +updated_at: datetime
+}
+
+' === NotificationService ===
+class NotificationService {
+    +sendNotification(to, message)
+    +sendPaymentNotification(to, message)
+}
+
+' === ActivityLog ===
+class ActivityLog {
+    +id: int
+    +user_id: int
+    +activity: string
+    +created_at: datetime
+    --
+    +create(data)
+}
+
+' === PaymentController ===
+class PaymentController {
+    +payCash(transaction_id, data)
+    +payEPayment(transaction_id, data)
+}
+
+' === PaymentService ===
+class PaymentService {
+    +processCashPayment(transaction_id, data): bool
+    +processEPayment(transaction_id, data): bool
+}
+
+' === Payment ===
+class Payment {
+    +id: int
+    +transaction_id: int
+    +amount: decimal
+    +payment_method: string
+    +payment_status: string
+    +payment_url: string
+    +paid_at: datetime
+    +created_at: datetime
+    +updated_at: datetime
+    --
+    +createOrUpdate(data)
+    +updateStatus(status)
+}
+
+' === MidtransAPI ===
+class MidtransAPI {
+    +createPaymentRequest(data): string
+    +verifySignature(data): bool
+}
+
+' === PaymentCallbackController ===
+class PaymentCallbackController {
+    +handleCallback(request)
+    +validateSignature(request): bool
+    +updatePaymentStatus(data)
+}
+
+' === Relasi ===
+ReservationController ..> Reservation : uses
+ReservationController ..> Transaction : uses
+ReservationController ..> Table : uses
+ReservationController ..> Customer : uses
+ReservationController ..> NotificationService : uses
+ReservationController ..> ActivityLog : uses
+Transaction "1" o-- "many" Payment : has
+Transaction "1" o-- "1" Table : uses
+Transaction "1" o-- "1" Reservation : uses
+PaymentController ..> PaymentService : uses
+PaymentService ..> Transaction : uses
+PaymentService ..> Payment : uses
+PaymentService ..> Table : uses
+PaymentService ..> ActivityLog : uses
+PaymentService ..> NotificationService : uses
+PaymentService ..> MidtransAPI : uses
+PaymentCallbackController ..> Payment : uses
+PaymentCallbackController ..> Transaction : uses
+PaymentCallbackController ..> Table : uses
+PaymentCallbackController ..> ActivityLog : uses
+PaymentCallbackController ..> NotificationService : uses
+PaymentCallbackController ..> MidtransAPI : uses
+
+@enduml

@@ -1,0 +1,11 @@
+@startuml Activity Diagram - Customer: Setelah Pembayaran Sukses
+
+|Customer|
+start
+:Notifikasi diterima (pembayaran sukses);
+:Tampilkan status reservasi/transaksi = 'paid' atau 'completed';
+:Tampilkan struk pembayaran;
+:Reservasi siap digunakan pada waktu yang ditentukan;
+
+stop
+@enduml

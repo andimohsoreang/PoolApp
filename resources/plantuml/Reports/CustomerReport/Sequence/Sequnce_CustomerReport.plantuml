@@ -1,0 +1,39 @@
+@startuml CustomerReportSequence
+
+actor "User" as User
+
+participant "ReportController" as Controller
+participant "Customer" as CustomerModel
+participant "Transaction" as TransactionModel
+database "customers table" as DB
+
+== REQUEST (View Customer Report) ==
+User -> Controller : GET /admin/reports/customers
+
+activate Controller
+Controller -> CustomerModel : getCustomers(filters)
+activate CustomerModel
+CustomerModel -> DB : SELECT * FROM customers WHERE category = ? AND deleted_at IS NULL
+DB --> CustomerModel : List of customers
+CustomerModel --> Controller : List of customers
+deactivate CustomerModel
+
+Controller -> TransactionModel : getTransactions(filters)
+activate TransactionModel
+TransactionModel -> DB : SELECT * FROM transactions WHERE created_at BETWEEN ? AND ?
+DB --> TransactionModel : List of transactions
+TransactionModel --> Controller : List of transactions
+deactivate TransactionModel
+
+Controller --> User : return view('admin.reports.customers', data)
+deactivate Controller
+
+== EXPORT (Export Customer Report) ==
+User -> Controller : Request CSV export
+Controller -> TransactionModel : generateCSV(filters)
+TransactionModel -> DB : SELECT * FROM transactions WHERE created_at BETWEEN ? AND ?
+DB --> TransactionModel : List of transactions for CSV
+TransactionModel --> Controller : Generate CSV file
+Controller -> User : Download CSV file
+
+@enduml

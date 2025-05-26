@@ -1,0 +1,34 @@
+@startuml Activity Diagram - Customer Report
+
+|User|
+start
+:Login ke aplikasi;
+:Masuk ke menu Reports;
+:Klik "Customer Report";
+
+:Input date range (daterangepicker);
+:Select customer category (optional);
+:Klik "Apply Filters";
+
+|ReportController|
+:Validasi input filter;
+:Query customers dan transaksi berdasarkan filter;
+:Hitung total customers, new customers, returning customers;
+:Kirim data ke View (customers.blade.php);
+
+|User|
+:Tampilkan summary statistics (total, new, returning);
+:Tampilkan tabel customer details;
+:Tampilkan grafik distribusi customer;
+
+if (User klik Export CSV?) then (ya)
+    |ReportController|
+    :Generate file CSV;
+    :Download file customer report;
+endif
+
+:User dapat menganalisis data, filter ulang, dan export data;
+
+stop
+
+@enduml

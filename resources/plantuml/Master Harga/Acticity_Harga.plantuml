@@ -1,0 +1,49 @@
+@startuml Activity Diagram - Master Harga
+
+|User|
+start
+:Masuk ke menu Master Harga;
+:Request ke PriceController (index);
+
+|PriceController|
+:Ambil data harga dari Model Price;
+:Kirim data ke View (daftar harga);
+
+|User|
+:Klik "Tambah Harga";
+:Input data harga baru;
+:Submit form tambah;
+
+|PriceController|
+:Validasi data harga;
+if (Valid?) then (ya)
+    :Simpan ke DB via Model Price;
+    :Redirect ke daftar harga (sukses);
+else (tidak)
+    :Tampilkan error validasi;
+endif
+
+:Klik "Edit" pada salah satu harga;
+:Form edit muncul dengan data lama;
+:Edit data harga, submit;
+
+:Validasi data harga;
+if (Valid?) then (ya)
+    :Update data di DB via Model Price;
+    :Redirect ke daftar harga (sukses);
+else (tidak)
+    :Tampilkan error validasi;
+endif
+
+:Klik "Hapus" pada salah satu harga;
+:Konfirmasi hapus harga;
+if (Konfirmasi?) then (ya)
+    :Soft delete data di DB via Model Price;
+    :Redirect ke daftar harga (sukses);
+else (tidak)
+    :Batal hapus;
+endif
+
+stop
+
+@enduml

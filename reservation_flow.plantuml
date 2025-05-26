@@ -1,0 +1,87 @@
+@startuml Reservation Flow
+actor Customer
+participant "Customer UI" as UI
+participant "Customer Controller" as CustomerCtrl
+participant "Admin Controller" as AdminCtrl
+participant "Reservation Model" as Reservation
+participant "Payment Gateway" as Payment
+participant "Transaction Model" as Transaction
+actor Admin
+
+title Billiard Table Reservation Flow
+
+== Reservation Initiation ==
+Customer -> UI: Navigate to reservation page
+UI -> CustomerCtrl: Request available tables
+CustomerCtrl -> Reservation: Query available tables and slots
+Reservation --> CustomerCtrl: Return available tables/slots
+CustomerCtrl --> UI: Display available tables
+UI --> Customer: Show available tables
+
+== Reservation Creation ==
+Customer -> UI: Select table and submit form
+note right of Customer
+  Input:
+  - Date
+  - Start time
+  - Duration
+end note
+UI -> CustomerCtrl: store() reservation
+CustomerCtrl -> CustomerCtrl: Validate inputs
+CustomerCtrl -> CustomerCtrl: Check for conflicts
+CustomerCtrl -> Reservation: Create reservation (status: pending)
+CustomerCtrl -> Reservation: Create notification for admin
+CustomerCtrl --> UI: Return success message
+UI --> Customer: Show reservation submitted confirmation
+
+== Admin Approval ==
+Admin -> AdminCtrl: View pending reservations
+AdminCtrl -> Reservation: Query pending reservations
+Reservation --> AdminCtrl: Return pending reservations
+AdminCtrl --> Admin: Display pending reservations
+Admin -> AdminCtrl: approve() reservation
+AdminCtrl -> Payment: Generate payment token
+Payment --> AdminCtrl: Return payment token
+AdminCtrl -> Reservation: Update (status: approved, payment_token, payment_expired_at)
+AdminCtrl --> Admin: Show approval confirmation
+
+== Customer Payment ==
+Customer -> UI: View approved reservation
+UI -> CustomerCtrl: pay() reservation
+CustomerCtrl -> Reservation: Check reservation status
+Reservation --> CustomerCtrl: Return reservation with payment token
+CustomerCtrl --> UI: Display payment page with token
+UI --> Customer: Show payment interface
+Customer -> Payment: Complete payment
+Payment -> CustomerCtrl: paymentCallback()
+CustomerCtrl -> Reservation: Update (status: paid, payment_details)
+CustomerCtrl -> Transaction: Create transaction record
+CustomerCtrl --> UI: Return payment success
+UI --> Customer: Show payment confirmation
+
+== Reservation Completion ==
+Admin -> AdminCtrl: checkPayment() reservation
+AdminCtrl -> Reservation: Update (status: completed)
+AdminCtrl -> Transaction: Update/confirm transaction
+AdminCtrl --> Admin: Show completion confirmation
+
+== Alternative Flows ==
+note over Admin, AdminCtrl
+  Admin can reject reservation:
+  - Update status to "rejected"
+  - Add rejection reason
+end note
+
+note over UI, CustomerCtrl
+  Payment can expire:
+  - If payment_expired_at passed
+  - Update status to "expired"
+end note
+
+note over Customer, UI
+  Customer can cancel:
+  - If status is "pending" or "approved"
+  - Update status to "cancelled"
+end note
+
+@enduml

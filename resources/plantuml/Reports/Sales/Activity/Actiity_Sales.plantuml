@@ -1,0 +1,35 @@
+@startuml Activity Diagram - Sales Report
+
+|SuperAdmin|
+start
+:Login ke aplikasi;
+:Masuk ke menu Reports;
+:Klik "Sales Report";
+
+:Input date range (daterangepicker);
+:Input transaction type (Walk-in/Reservation);
+:Klik "Apply Filters";
+
+|ReportController|
+:Validasi input filter;
+:Query transaksi (date range, type, status completed/paid);
+:Hitung total transaksi, revenue, rata-rata transaksi;
+:Query daily sales, payment methods, transaction types, top tables;
+:Kirim data ke View (sales.blade.php);
+
+|SuperAdmin|
+:Tampilan summary cards (total transaksi, revenue, avg);
+:Tampilan chart (daily sales, payment methods, transaction types);
+:Tampilan tabel (top tables, detail transaksi);
+
+if (Klik Export CSV?) then (ya)
+    |ReportController|
+    :Generate file CSV;
+    :Download file sales report;
+endif
+
+:SuperAdmin dapat filter ulang, analisis, dan export data;
+
+stop
+
+@enduml

@@ -1,0 +1,35 @@
+@startuml Sistem Pembayaran Pool Open System
+
+start
+
+:Pelanggan memilih metode pembayaran;
+
+if (Metode Pembayaran?) then (E-Payment)
+  :Sistem menampilkan form pembayaran elektronik;
+  :Pelanggan memilih provider pembayaran;
+  :Sistem memproses pembayaran via Midtrans;
+  if (Status Pembayaran?) then (Sukses)
+    :Sistem menampilkan notifikasi sukses;
+    :Update status pembayaran;
+    :Redirect ke halaman transaksi;
+  else (Pending/Error)
+    :Sistem menampilkan notifikasi status;
+    :Pelanggan dapat mencoba ulang pembayaran;
+  endif
+else (Cash)
+  :Sistem menampilkan form pembayaran tunai;
+  :Staff input jumlah pembayaran;
+  if (Pembayaran Valid?) then (Ya)
+    :Sistem menyimpan pembayaran;
+    :Cetak bukti pembayaran;
+  else (Tidak)
+    :Tampilkan pesan error;
+    :Staff dapat input ulang;
+  endif
+endif
+
+:Transaksi selesai;
+
+stop
+
+@enduml

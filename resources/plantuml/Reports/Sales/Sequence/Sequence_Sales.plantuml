@@ -1,0 +1,53 @@
+@startuml SalesReportSequence
+
+skinparam sequence {
+    ArrowColor #2C3E50
+    ActorBorderColor #2C3E50
+    LifeLineBorderColor #2C3E50
+    LifeLineBackgroundColor #ECF0F1
+    ParticipantBorderColor #2C3E50
+    ParticipantBackgroundColor #ECF0F1
+    ParticipantFontName Arial
+    ParticipantFontSize 14
+    ParticipantFontStyle #2C3E50
+    ActorBackgroundColor #ECF0F1
+    ActorFontName Arial
+    ActorFontSize 14
+    ActorFontStyle #2C3E50
+}
+
+actor "Super Admin" as SuperAdmin
+
+participant "ReportController" as Controller
+participant "SalesReportService" as Service
+participant "Transaction" as TransactionModel
+participant "User" as UserModel
+participant "sales.blade.php" as View
+
+== Request Sales Report ==
+SuperAdmin -> Controller : GET /admin/reports/sales
+
+activate Controller
+Controller -> Service : getSalesReport(filters)
+activate Service
+
+Service -> TransactionModel : query sales data (date range, status, etc)
+activate TransactionModel
+TransactionModel --> Service : sales data (list of transactions)
+deactivate TransactionModel
+
+Service -> UserModel : get user info (optional, for report details)
+activate UserModel
+UserModel --> Service : user data
+deactivate UserModel
+
+Service --> Controller : formatted sales report data
+deactivate Service
+
+Controller -> View : return view('admin.reports.sales', data)
+deactivate Controller
+
+== Render Report ==
+View -> SuperAdmin : Display sales report table, filters, export options
+
+@enduml

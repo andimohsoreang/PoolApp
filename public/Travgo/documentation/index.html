@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!--==== favicon css ====-->
+    <link rel="shortcut icon" href="assets/images/favicon.png" type="image/x-icon" />
+
+    <title>Travgo - Documentation</title>
+
+    <!--==== style css ====-->
+    <link rel="stylesheet" href="assets/css/dz-icon.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <style>
+        *,:after,:before{
+            box-sizing: border-box;
+        }
+        .dz-container{
+            padding: 5px;
+            position: relative;
+            width: 100%;
+            margin-right: auto;
+            margin-left: auto;
+        }
+        .dz-hline{
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .dz-vline{
+            flex-grow: 1;
+            flex-basis: 0;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+ 
+        :root{
+            --ion-grid-columns : 12;
+            --ion-grid-column-padding: 5px;
+        }
+        body{
+            margin: 0;
+        }
+
+    </style>
+
+</head>
+
+<body>
+    <!-- Start scroll top button area -->
+    <button class="top-btn"> 
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#ffffff" viewBox="0 0 256 256"><path d="M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z"></path></svg>
+    </button>
+    <!-- End scroll top button area -->
+
+    <!-- Header part start -->
+    <header>
+        <!-- Menubar section start -->
+        <section class="dz-menubar">
+            <div class="dz-container dz-p0">
+                <div class="dz-hline">
+                    <div class="dz-vline dz-p0" data-display="12">
+                        <ul>
+                            <li class="dz-nav-item">
+                                <a class="dz-nav-link active scroll-down" href="#general">general info</a>
+                            </li>
+                            <li class="dz-nav-item">
+                                <a class="dz-nav-link scroll-down" href="#folder">folder structure</a>
+                            </li>
+                            <li class="dz-nav-item">
+                                <a class="dz-nav-link scroll-down" href="#edit">edit</a>
+                            </li>
+                            <li class="dz-nav-item">
+                                <a class="dz-nav-link scroll-down" href="#structure">structure</a>
+                            </li>
+                            <li class="dz-nav-item">
+                                <a class="dz-nav-link scroll-down" href="#credit">credit</a>
+                            </li>
+                        </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Menubar section end -->
+
+        <!-- Banner section start -->
+        <section class="dz-banner">
+            <div class="dz-overlay">
+                <a href="../preview/index.html"><img src="assets/images/logo.svg" alt="logo"></a>
+                <h1>documentation</h1>
+                <p>A complete guide of Travgo Travel Mobile App Template</p>
+                <a href="https://themeforest.net/user/website_stock/portfolio" class="btn-style"><span>support</span></a>
+            </div>
+        </section>
+        <!-- Banner section end -->
+    </header>
+    <!-- Header part end -->
+
+    <!-- Main section start -->
+    <section class="dz-main">
+        <div class="dz-container">
+            <div class="dz-hline">
+                <div class="dz-vline dz-p0">
+                    <!-- General info -->
+                    <div class="part" id="general">
+                        <h2>general information</h2>
+                        <p>Travgo is a Travel Mobile App Template, which is a set of pre-designed user interface elements that can be used to create a mobile application for travel and tourism. Travgo travels mobile app UI kits also include ready-made screens for different sections of the app, Suitable for anyone who is looking for app, app landing, app template, mobile app landing, travel app, multipurpose app etc website such as hotel booking, Tourist spot finding, Tour guide finding, destination search, payment option, message chatting, audio call, video call, and more features. These app screens are designed with the latest modern design trends with user experience principles in mind. </p>
+                    </div>
+                    <!-- Folder structure -->
+                    <div class="part" id="folder">
+                        <h2>Folder structure</h2>
+                        <ul class="folder-struc">
+                            <li class="file folder">Documentation</li>
+                            <ul class="margin-left">
+                                <li class="file folder">assets</li>
+                                <ul class="margin-left">
+                                    <li class="file folder">css</li>
+                                    <li class="file folder">images</li>
+                                    <li class="file folder">js</li>
+                                </ul>
+                                <li class="file page">index</li>
+                            </ul>
+                            <li class="file folder">Preview</li>
+                            <ul class="folder-struc margin-left">
+                                <li class="file folder">assets</li>
+                                <ul class="margin-left">
+                                    <li class="file folder">css</li>
+                                    <li class="file folder">images</li>
+                                    <li class="file folder">js</li>
+                                    <li class="file folder">svg</li>
+                                </ul>
+                                <li class="file folder">components</li>
+                                <ul class="margin-left">
+                                    <li class="file page">splash-screen.html</li>
+                                </ul>
+                                <li class="file folder">pages</li>
+                                <ul class="folder-struc">
+                                    <li class="file folder">auth</li>
+                                    <ul class="margin-left">
+                                        <li class="file page">create-new-password.html</li>
+                                        <li class="file page">enter-otp.html</li>
+                                        <li class="file page">forgot-password.html</li>
+                                        <li class="file page">select-language.html</li>
+                                        <li class="file page">signin-email.html</li>
+                                        <li class="file page">signin.html</li>
+                                        <li class="file page">signup-email.html</li>
+                                        <li class="file page">signup.html</li>
+                                    </ul>
+                                    <li class="file folder">chat</li>
+                                    <ul class="margin-left">
+                                        <li class="file page">audio-call.html</li>
+                                        <li class="file page">chat.html</li>
+                                        <li class="file page">message.html</li>
+                                        <li class="file page">video-call.html</li>
+                                    </ul>
+                                    <li class="file folder">profile</li>
+                                    <ul class="margin-left">
+                                        <li class="file page">add-address.html</li>
+                                        <li class="file page">add-card.html</li>
+                                        <li class="file page">change-password.html</li>
+                                        <li class="file page">forgot-password.html</li>
+                                        <li class="file page">guide-profile.html</li>
+                                        <li class="file page">help-support.html</li>
+                                        <li class="file page">legal-policy.html</li>
+                                        <li class="file page">notifications.html</li>
+                                        <li class="file page">security.html</li>
+                                        <li class="file page">user-address.html</li>
+                                        <li class="file page">user-info.html</li>
+                                        <li class="file page">user-language.html</li>
+                                        <li class="file page">user-payment.html</li>
+                                        <li class="file page">user-profile.html</li>
+                                    </ul>
+                                </ul>
+                                <li class="file page">book-hotel.html</li>
+                                <li class="file page">checkout-hotel.html</li>
+                                <li class="file page">checkout-vacation.html</li>
+                                <li class="file page">explore.html</li>
+                                <li class="file page">home.html</li>
+                                <li class="file page">hotel-details.html</li>
+                                <li class="file page">notification.html</li>
+                                <li class="file page">review.html</li>
+                                <li class="file page">search-result.html</li>
+                                <li class="file page">service-location.html</li>
+                                <li class="file page">ticket-booked.html</li>
+                                <li class="file page">ticket-detail.html</li>
+                                <li class="file page">tour-guide.html</li>
+                                <li class="file page">vacation-details.html</li>
+                                <li class="file page">wishlist.html</li>
+                            </ul>
+                            <li class="file page">index.html</li>
+                            <li class="file page">page.html</li>
+                        </ul>
+                    </div>
+                    <!-- file contain -->
+                    <div class="part">
+                        <h2>Package files content</h2>
+                        <div class="inner-part">
+                            <p>The main archive you will download will contain the following folder structure:</p>
+                            <img src="assets/images/folder.png" alt="">
+                            <p>The main demos of the template are found inside the "preview" folder. Once you open it, you will see all the folder. In that folder you will see all the main demos of this template. To test the demos just open the main index.html file.</p>
+                            <img src="assets/images/all-folders.png" alt="">
+                        </div>
+                    </div>
+                    <!-- uses -->
+                    <div class="part">
+                        
+                        <h2>HTML/CSS templates, definition and usage.</h2>
+                        <div class="inner-part">
+                            <p>A HTML/CSS Template is a pre-designed layout that will help you build a final website. HTML ( HyperText Markup Language) is the basic coding to create web pages. CSS stands for Cascading Style Sheets and it's used to define and style the HTML elements.</p>
+                            <p>To install a HTML/CSS template requires just to copy the template files on your webserver. This can be done using your hosting provider custom interface or a FTP (File Transfer Protocol) software. Our recommandation is FileZilla.</p>
+                            <p>A regular HTML/CSS template does NOT include a CMS (Content Management System) to edit/add content of the pages. All content is edited using a HTML editor. HTML editors can be found as free and paid editors. Some modern HTML editors have included a DESIGN view mode of the code, making it easier for templates to be edited. Regular ones will let you edit the content only from the code mode, meaning you will need to have a basic HTML coding knowledge.</p>
+                        </div>
+                    </div>
+                    <!-- editing -->
+                    <div class="part" id="edit">
+                        <h2> Editing the template</h2>
+                        <div class="inner-part">
+                            <p><strong>EDITING THIS TEMPLATE REQUIRES BASIC HTML/CSS AND JAVASCRIPT KNOWLEDGE. IF YOU DON'T HAVE A BASIC KNOWLEDGE OF THIS WE RECOMMEND HIRE A WEBDESIGNER OR LOOK FOR A FREELANCER ON ENVATO STUDIO.</strong></p>
+                            <p><strong>EDITING THIS MOBILE TEMPLATE DO NOT REQUIRE A SERVER. YOU CAN EDIT IT USING A LOCAL HTML EDITOR SOFTWARE. ONLY TESTING IT, WILL REQUIRE TO BE UPLOADED TO A SERVER.</strong></p>
+                            <p>To edit this HTML template you will need a <strong>HTML editor</strong>. Even Notepad will do the job, but a dedicated HTML editor will work better in arranging the code structure. HTML editors are softwares that allow code editing. Some HTML editors have included a DESIGN mode, which will allow you to see the interface of the page you are editing. Editors can be found FREE or PREMIUM on the WEB.</p>
+                        </div>
+                    </div>
+                    <!-- structure -->
+                    <div class="part" id="structure">
+                        <h2> General HTML/ CSS structure</h2>
+                        <div class="inner-part">
+                            <p>The main HTML structure is composed from: <br>- the header <br>- the main content <br>- the footer</p>
+                            <h3>The CSS structure</h3>
+                            <p>You can find all the CSS file in assets > css folder.</p>
+                            <p>At the beginning of each css file there is a Table of Content, so you know exactly from where each section can be customized.</p>
+                            <img src="assets/images/css-index.png" alt="">
+                        </div>
+                    </div>
+                    <!-- header -->
+                    <div class="part">
+                        <h2>The Header Part</h2>
+                        <div class="inner-part">
+                            <p>The header part contains the main navigation of the page. You can find all the pages and components in this navigation.</p>
+                            <img src="assets/images/nav-main.png" alt="">
+                            <p>You can find the navigation code in index.html, home.html, signin.html, signup.html file in preview folder.</p>
+                            <img src="assets/images/navigation.png" alt="">
+                        </div>
+                    </div>
+                    <!-- main -->
+                    <div class="part">
+                        <h2> Main Content Part</h2>
+                        <div class="inner-part">
+                            <p>The main content part contains the content of the home page named home.html</p>
+                            <img src="assets/images/home.png" alt="">
+                            <p>You can find the home layout code in home.html file in preview folder.</p>
+                            <img src="assets/images/home-code.png" alt="">
+                            <p>1. You can change the navigation by searching the class name 'bottom-nav' in home.html file.</p>
+                            <img src="assets/images/home-code.png" alt="">
+                            <p>2. home.html - contains some examples of slider which can be used to create custom slider structures in pages</p>
+                            <img src="assets/images/home.png" alt="">
+                            <p>You can find the slider source code in home.html file</p>
+                            <img src="assets/images/slider-code.png" alt="">
+                            <p>The slider is made by Swiper slider plugin. You can add the slider in your template by add swiper-bundle.min.css and swiper-bundle.min.js file in your page header.</p>
+                            <img src="assets/images/slidercss.png" alt="">
+                            <img src="assets/images/sliderjs.png" alt="">
+                            <p>Then in script.js file add the javascript or jquery codes.</p>
+                            <img src="assets/images/sliderjs-code.png" alt="">
+                            <p>3. explore.html file contains location cards for vacation.</p>
+                            <img src="assets/images/inputs.png" alt="">
+                            <p>4. ticket-booked.html file contains ticket cards for vacation.</p>
+                            <img src="assets/images/booked-ticket.png" alt="">
+                            <p>5. wishlist.html file contains wishlist cards for user wishlist items.</p>
+                            <img src="assets/images/wishlist.png" alt="">
+                            <p>6. user-profile.html file contains profile information for user.</p>
+                            <img src="assets/images/profile.png" alt="">
+                        </div>
+                    </div>
+                    <!-- footer -->
+                    <div class="part">
+                        <h2>Bottom Navigation</h2>
+                        <div class="inner-part">
+                            <img src="assets/images/footer.png" alt="">
+                            <p>Bottom Navigation HTML codes are in index.html file in preview folder.</p>
+                            <img src="assets/images/logo-line.png" class="img-fluid" alt="">
+                        </div>
+                    </div>
+                    <!-- pages -->
+                    <div class="part">
+                        <h2>Custom secondary pages</h2>
+                        <div class="inner-part">
+                            <p>There are included more secondary pages in the demos. Like setting, authentication, profile, home, ticket, search-result, notification.... etc. All the pages are ready to use in make separately inside the preview folder.</p>
+                            <p>Here are some examples of secondary pages structures:</p>
+                            
+                            <p>1. signup.html - contains some example of cards blocks which can be used to create custom blocks structures in pages. You can find this page in cards folder inside of preview folder.</p>
+                            <img src="assets/images/signup.png" alt="">
+                            <p>2. home.html, index.html - contains some example of setting blocks which can be used to create custom blocks structures in pages. You can find this page in cards folder inside of preview folder.</p>
+                            <img src="assets/images/setting.png" alt="">
+                            <p>3. welcome.html - contains some example of a registration page which can be used to create registration blocks structures in pages. You can find this page in cards folder inside of preview folder.</p>
+                            <img src="assets/images/welcome.png" alt="">
+                            <p>You can add this register page in your application by copy the html and css file in authentication folder. You can find the folder in your preview folder. Or you can see <a href="#folder" class="scroll-down" style="font-weight: 600; color: var(--blue);">folder</a> section to find the desired folder</p>
+                        </div>
+                    </div>
+                    <!-- css files -->
+                    <div class="part">
+                        <h2>CSS files</h2>
+                        <div class="inner-part">
+                            <p>We find all the css files in preview > assets > css folder.</p>
+                            <img src="assets/images/assets.png" alt="">
+                            <p>Inside the css folder we find all the css files</p>
+                            <img src="assets/images/css-files.png" alt="">
+                        </div>
+                    </div>
+                    <!-- js files -->
+                    <div class="part">
+                        <h2>Javascript / jQuery files</h2>
+                        <div class="inner-part">
+                            <p>We find all the javascript or jquery file in preview > assets > js folder.</p>
+                            <img src="assets/images/assets.png" alt="">
+                            <p>Inside the js folder we find all the js and jquery files</p>
+                            <img src="assets/images/jsfile.png" alt="">
+                        </div>
+                    </div>
+                    
+                    <!-- Credit -->
+                    <div class="part" id="credit">
+                        <h2>sources and credits</h2>
+                        <div class="inner-part">
+                            <h3>fonts</h3>
+                            <ul class="link">
+                                <li><a href="https://fonts.google.com/specimen/Plus+Jakarta+Sans">Plus Jakarta Sans</a></li>
+                            </ul>
+                        </div>
+                        <div class="inner-part">
+                            <h3>CSS</h3>
+                            <ul class="link">
+                                <li><a href="https://getbootstrap.com/">Bootstrap</a></li>
+                                <li><a href="https://jqueryui.com/">JQuery UI</a></li>
+                                <li><a href="https://swiperjs.com/">Swiper Slider</a></li>
+                            </ul>
+                        </div>
+                        <div class="inner-part">
+                            <h3>JS</h3>
+                            <ul class="link">
+                                <li><a href="https://getbootstrap.com/">Bootstrap</a></li>
+                                <li><a href="https://jquery.com/">JQuery</a></li>
+                                <li><a href="https://xdsoft.net/jqplugins/datetimepicker/">JQuery Datetime Picker</a></li>
+                                <li><a href="https://www.kunkalabs.com/mixitup/">Mixitup</a></li>
+                                <li><a href="https://swiperjs.com/">Swiper Slider</a></li>
+                            </ul>
+                        </div>
+                        <div class="inner-part">
+                            <h3>icons</h3>
+                            <ul class="link">
+                                <li><a href="#!">Custom SVG Icon</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Footer -->
+                    <div class="part footer">
+                        <p>All images have been used for demonstration purposes only and are not included in the template.</p>
+                        <p><span>Support:</span> If you need any help using the file or need special customizing please feel free to contact me via my Themeforest profile. If you have a moment, please rate this item, I’ll appreciate it very much!….Thank you.</p>
+                        <p>I am always happy to help you. Please, contact me from my profile page.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Main section end -->
+    
+    <script src="assets/js/jquery-3.5.1.min.js"></script>
+    <script src="assets/js/script.js"></script>
+</body>
+
+</html>

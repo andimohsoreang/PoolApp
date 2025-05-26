@@ -1,0 +1,51 @@
+@startuml Reservation Flow
+
+' Actors
+actor Customer
+actor Admin
+database Database
+participant MidtransAPI
+
+' Customer Flow
+Customer -> CustomerReservationController: Memilih meja
+CustomerReservationController -> Database: Cek ketersediaan meja
+Database --> CustomerReservationController: Status ketersediaan
+CustomerReservationController -> Customer: Tampilkan form reservasi
+
+Customer -> CustomerReservationController: Input detail reservasi
+CustomerReservationController -> Database: Simpan reservasi (status: pending)
+Database --> CustomerReservationController: Konfirmasi penyimpanan
+CustomerReservationController -> Admin: Kirim notifikasi reservasi baru
+
+' Admin Flow
+Admin -> AdminReservationController: Lihat daftar reservasi
+AdminReservationController -> Database: Ambil data reservasi
+Database --> AdminReservationController: Data reservasi
+AdminReservationController -> Admin: Tampilkan detail reservasi
+
+Admin -> AdminReservationController: Approve/Reject reservasi
+alt Approve
+    AdminReservationController -> MidtransAPI: Generate payment token
+    MidtransAPI --> AdminReservationController: Payment token
+    AdminReservationController -> Database: Update status (approved)
+    AdminReservationController -> Customer: Notifikasi approval & payment link
+else Reject
+    AdminReservationController -> Database: Update status (rejected)
+    AdminReservationController -> Customer: Notifikasi rejection
+end
+
+' Payment Flow
+Customer -> MidtransAPI: Melakukan pembayaran
+MidtransAPI -> AdminReservationController: Payment callback
+AdminReservationController -> Database: Update status (paid)
+AdminReservationController -> Database: Buat record transaksi
+Database --> AdminReservationController: Konfirmasi transaksi
+AdminReservationController -> Customer: Notifikasi pembayaran berhasil
+
+' Completion Flow
+Admin -> AdminReservationController: Verifikasi reservasi selesai
+AdminReservationController -> Database: Update status (completed)
+Database --> AdminReservationController: Konfirmasi update
+AdminReservationController -> Customer: Notifikasi reservasi selesai
+
+@enduml

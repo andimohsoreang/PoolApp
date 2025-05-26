@@ -1,0 +1,33 @@
+@startuml Sequence Diagram - Walk-In Payment (Cash)
+
+actor User
+participant "WalkinController" as Controller
+participant "WalkinService" as Service
+participant "Transaction" as TransactionModel
+participant "Payment" as PaymentModel
+participant "Table" as TableModel
+participant "ActivityLog" as LogModel
+
+User -> Controller : Pilih transaksi aktif, klik "Bayar Cash"
+Controller -> Controller : Validasi request pembayaran
+alt Data valid
+    Controller -> Service : processCashPayment(request)
+    Service -> TransactionModel : find(transaction_id)
+    TransactionModel -> TransactionModel : cek status (belum lunas & aktif)
+    alt Bisa diproses
+        Service -> PaymentModel : createOrUpdate(transaction_id, method='cash', status='paid')
+        Service -> TransactionModel : update status 'paid'/'completed'
+        Service -> TableModel : update status 'kosong' (jika transaksi selesai)
+        Service -> PaymentModel : set paid_at (waktu pembayaran)
+        Service -> LogModel : create log pembayaran (opsional)
+        Service --> Controller : status sukses
+        Controller -> User : Redirect ke halaman sukses/struk pembayaran
+    else Tidak bisa diproses
+        Service --> Controller : error (sudah lunas/invalid)
+        Controller -> User : Tampilkan error ke user
+    end
+else Data tidak valid
+    Controller -> User : Tampilkan error validasi ke user
+end
+
+@enduml

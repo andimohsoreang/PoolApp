@@ -1,0 +1,33 @@
+@startuml Activity Diagram - Table Usage Report
+
+|User|
+start
+:Login ke aplikasi;
+:Masuk ke menu Reports;
+:Klik "Tables Usage Report";
+
+:Input date range (daterangepicker);
+:Select room (optional);
+:Klik "Apply Filters";
+
+|ReportController|
+:Validasi input filter;
+:Query tables dan transaksi berdasarkan filter;
+:Hitung total hours, total revenue, total transactions;
+:Kirim data ke View (tables.blade.php);
+
+|User|
+:Tampilkan tabel penggunaan meja;
+:Tampilkan grafik pemanfaatan;
+
+if (User klik Export CSV?) then (ya)
+    |ReportController|
+    :Generate file CSV;
+    :Download file usage report;
+endif
+
+:User dapat menganalisis data, filter ulang, dan export data;
+
+stop
+
+@enduml

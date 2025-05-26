@@ -1,0 +1,75 @@
+@startuml Sequence Diagram - CRUD Master Harga (Lengkap)
+
+actor User
+participant "PriceController" as Controller
+participant "PriceService" as Service
+participant "Price" as Model
+database "prices table" as DB
+
+== READ (List Prices) ==
+User -> Controller : GET /admin/prices
+Controller -> Service : getAllPrices()
+Service -> Model : all()
+Model -> DB : SELECT * FROM prices WHERE deleted_at IS NULL
+DB --> Model : List harga
+Model --> Service : List harga
+Service --> Controller : List harga
+Controller -> User : Tampilkan daftar harga
+
+== CREATE (Add Price) ==
+User -> Controller : GET /admin/prices/create
+Controller -> User : Tampilkan form tambah harga
+
+User -> Controller : POST /admin/prices (data harga)
+Controller -> Controller : Validasi data
+alt Data valid
+    Controller -> Service : createPrice(data)
+    Service -> Model : create(data)
+    Model -> DB : INSERT INTO prices ...
+    DB --> Model : Data harga baru
+    Model --> Service : Data harga baru
+    Service --> Controller : Data harga baru
+    Controller -> User : Redirect ke daftar harga (sukses)
+else Data tidak valid
+    Controller -> User : Kembali ke form + error validasi
+end
+
+== UPDATE (Edit Price) ==
+User -> Controller : GET /admin/prices/{id}/edit
+Controller -> Service : getPriceById(id)
+Service -> Model : find(id)
+Model -> DB : SELECT * FROM prices WHERE id=?
+DB --> Model : Data harga
+Model --> Service : Data harga
+Service --> Controller : Data harga
+Controller -> User : Tampilkan form edit harga
+
+User -> Controller : PUT /admin/prices/{id} (data baru)
+Controller -> Controller : Validasi data
+alt Data valid
+    Controller -> Service : updatePrice(id, data baru)
+    Service -> Model : find(id)
+    Model -> DB : SELECT * FROM prices WHERE id=?
+    DB --> Model : Data harga
+    Model --> Service : Data harga
+    Service -> Model : update(data baru)
+    Model -> DB : UPDATE prices SET ... WHERE id=?
+    Service --> Controller : Data harga terupdate
+    Controller -> User : Redirect ke daftar harga (sukses)
+else Data tidak valid
+    Controller -> User : Kembali ke form + error validasi
+end
+
+== DELETE (Delete Price) ==
+User -> Controller : DELETE /admin/prices/{id}
+Controller -> Service : deletePrice(id)
+Service -> Model : find(id)
+Model -> DB : SELECT * FROM prices WHERE id=?
+DB --> Model : Data harga
+Model --> Service : Data harga
+Service -> Model : delete()
+Model -> DB : Soft delete (UPDATE prices SET deleted_at=NOW() WHERE id=?)
+Service --> Controller : Status sukses
+Controller -> User : Redirect ke daftar harga (sukses)
+
+@enduml
