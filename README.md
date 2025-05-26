@@ -1,16 +1,19 @@
-# LaraPool - Pool Management System
+# PoolApp - Comprehensive Billiard Management System
 
-LaraPool is a comprehensive pool management system designed to streamline the operations of billiard and pool halls. It offers robust functionality for table reservations, F&B management, transaction processing, and business analytics.
+PoolApp is a powerful and intuitive management system designed specifically for billiard halls and pool establishments. The application streamlines all aspects of day-to-day operations including table reservations, food and beverage ordering, inventory management, staff coordination, and detailed business analytics.
 
-## Features
+Built with Laravel, this system provides a robust foundation for managing the complete lifecycle of pool hall operations, from customer check-in to financial reporting.
 
-- **Table Reservation**: Easy scheduling and management of pool tables
-- **F&B Order Management**: Process food and beverage orders efficiently
-- **POS System**: Complete point-of-sale functionality
-- **Inventory Management**: Track F&B and equipment inventory
-- **User Management**: Role-based access control for staff and administrators
-- **Reports & Analytics**: Comprehensive business intelligence dashboard
-- **Notifications**: Real-time alerts for reservations and orders
+## Key Features
+
+- **Advanced Table Reservation**: Intuitive scheduling system with conflict prevention, time-based pricing, and calendar visualization
+- **F&B Order Management**: Complete food and beverage ordering system with kitchen notifications and status tracking
+- **Modern POS System**: Comprehensive point-of-sale functionality with multiple payment methods support
+- **Inventory Control**: Track F&B and equipment inventory with automatic alerts for low stock
+- **User Management**: Role-based access control with custom permissions for owners, managers, staff, and customers
+- **Business Intelligence**: Detailed reports and analytics with customizable dashboards for data-driven decisions
+- **Real-time Notifications**: Instant alerts for new reservations, order status changes, and important system events
+- **Customer Management**: Profile creation, reservation history, and loyalty program integration
 
 ## Requirements
 
@@ -24,8 +27,8 @@ LaraPool is a comprehensive pool management system designed to streamline the op
 
 1. Clone the repository:
    ```
-   git clone https://github.com/andimohsoreang/LaraPool.git
-   cd LaraPool
+   git clone https://github.com/andimohsoreang/PoolApp.git
+   cd PoolApp
    ```
 
 2. Install PHP dependencies:
@@ -49,7 +52,7 @@ LaraPool is a comprehensive pool management system designed to streamline the op
    DB_CONNECTION=mysql
    DB_HOST=127.0.0.1
    DB_PORT=3306
-   DB_DATABASE=larapool
+   DB_DATABASE=poolapp
    DB_USERNAME=root
    DB_PASSWORD=
    ```
@@ -94,28 +97,43 @@ php artisan view:cache
 2. Access the application at `http://localhost:8000`
 
 3. Default admin login:
-   - Email: admin@larapool.com
+   - Email: admin@poolapp.com
    - Password: password
 
 ## Development
 
-### Code Style
+### Code Style & Standards
 
-This project follows the PSR-12 coding standard and Laravel's coding style. To check your code style:
+This project follows the PSR-12 coding standard and Laravel's coding style guidelines. To check your code style:
 ```
 ./vendor/bin/phpcs
 ```
 
-### Running Tests
+### Testing
 
+The application includes comprehensive testing:
 ```
 php artisan test
 ```
+
+### Project Architecture
+
+PoolApp follows Laravel best practices with:
+- MVC architecture for clean separation of concerns
+- Repository pattern for database operations
+- Service layer for business logic
+- Event-driven design for real-time features
 
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Contact
+## Security
 
-For support or inquiries, please contact [andimohamaddd@gmail.com](mailto:andimohamaddd@gmail.com).
+If you discover any security vulnerabilities, please email [andimohamaddd@gmail.com](mailto:andimohamaddd@gmail.com) instead of using the issue tracker.
+
+## Contact & Support
+
+For general support, feature requests, or inquiries, please contact:
+- Email: [andimohamaddd@gmail.com](mailto:andimohamaddd@gmail.com)
+- GitHub: [github.com/andimohsoreang](https://github.com/andimohsoreang)
